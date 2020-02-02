@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+public class Home_activity extends AppCompatActivity {
 
     private static int SPLASH_TIME_OUT=4000;
 
@@ -16,9 +16,10 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent homeintent=new Intent(MainActivity.this,Login_Activity.class);
+                Intent homeintent=new Intent(Home_activity.this,Login_Activity.class);
                 startActivity(homeintent);
                 finish();
             }
         },SPLASH_TIME_OUT);}
-}
+    }
+

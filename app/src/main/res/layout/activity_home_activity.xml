@@ -9,7 +9,7 @@
     android:paddingTop="300dp"
     android:paddingBottom="300dp"
     android:background="@android:color/holo_red_light"
-    tools:context=".MainActivity">
+    tools:context=".Home_activity">
 
     <TextView
         android:layout_width="wrap_content"

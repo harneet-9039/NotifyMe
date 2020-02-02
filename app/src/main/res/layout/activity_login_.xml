@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Login_Activity">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/back"
+        android:scaleType="centerCrop"
+        android:id="@+id/loginBack"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="50dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="30dp"
+        android:textAlignment="center"
+        android:id="@+id/loginlogo"
+        />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/loginlogo"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/trans_white_rectangle"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            >
+
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+
+                android:hint="Username"
+                android:background="@drawable/rounded_white"
+                android:layout_marginTop="40dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:drawableLeft="@drawable/user"
+                android:textSize="20sp"
+                android:paddingLeft="10dp"
+                android:drawablePadding="15dp"
+                android:id="@+id/username"
+                android:layout_marginBottom="20dp"
+                />
+
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+
+                android:hint="Password"
+                android:background="@drawable/rounded_white"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:drawableLeft="@drawable/password"
+                android:paddingLeft="10dp"
+                android:textSize="20sp"
+                android:drawablePadding="15dp"
+                android:inputType="textPassword"
+                android:id="@+id/password"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="Login"
+                android:textStyle="normal"
+                android:layout_gravity="center"
+                android:background="@drawable/login_button"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                >
+            </Button>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="I don't have an acount"
+                android:textSize="12dp"
+                android:layout_gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="20dp"
+                android:id="@+id/Register_Link"
+                />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
