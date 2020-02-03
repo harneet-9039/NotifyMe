@@ -45,7 +45,7 @@
             android:layout_marginEnd="40dp"
             >
 
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
 
@@ -62,7 +62,7 @@
                 android:layout_marginBottom="20dp"
                 />
 
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
 
@@ -81,6 +81,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:text="Login"
+                android:id="@+id/Login"
                 android:textStyle="normal"
                 android:layout_gravity="center"
                 android:background="@drawable/login_button"

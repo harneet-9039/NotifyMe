@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -29,7 +30,7 @@ public class Singleton {
         }
         return requestQueue;
     }
-    public static synchronized Singleton getInstance(Register_Activity context)
+    public static synchronized Singleton getInstance(Context context)
     {
         if(Singleton==null)
             Singleton = new Singleton(context);
@@ -41,7 +42,7 @@ public class Singleton {
         requestQueue.add(request);
 
     }
-    public void addToJsonRequestQueue(JsonArrayRequest jsonArrayRequest)
+    public void addToJsonRequestQueue(JsonObjectRequest jsonArrayRequest)
     {
         requestQueue.add(jsonArrayRequest);
     }

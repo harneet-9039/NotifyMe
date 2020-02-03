@@ -45,7 +45,7 @@
             android:layout_marginEnd="40dp"
             >
 
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
 
@@ -60,7 +60,7 @@
                 android:id="@+id/name"
                 android:layout_marginBottom="20dp"
                 />
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:hint="Registration Id"
@@ -99,7 +99,7 @@
                 android:id="@+id/course_id"
                 android:layout_marginBottom="20dp"
                 />
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:hint="Year"
@@ -113,7 +113,7 @@
                 android:id="@+id/year"
                 android:layout_marginBottom="20dp"
                 />
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:hint="Email"
@@ -126,7 +126,7 @@
                 android:id="@+id/email_id"
                 android:layout_marginBottom="20dp"
                 />
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:hint="Contact"
@@ -140,7 +140,7 @@
                 android:id="@+id/contact"
                 android:layout_marginBottom="20dp"
                 />
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
 
@@ -153,7 +153,7 @@
                 android:drawablePadding="15dp"
                 android:inputType="textPassword"
                 android:id="@+id/password"/>
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
 
@@ -168,6 +168,7 @@
                 android:inputType="textPassword"
                 android:id="@+id/c_password"/>
             <Button
+                android:id="@+id/RegisterUser"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:text="Register"
