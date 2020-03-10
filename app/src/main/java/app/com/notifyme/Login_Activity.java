@@ -2,12 +2,11 @@ package app.com.notifyme;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.content.Intent;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,7 +19,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,7 +27,6 @@ import java.util.Map;
 
 import app.com.common.GlobalMethods;
 import app.com.common.Singleton;
-import app.com.models.Course;
 
 public class Login_Activity extends AppCompatActivity implements View.OnClickListener {
 
