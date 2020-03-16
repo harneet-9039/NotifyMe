@@ -13,8 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".NoticeDashboard"
-            android:label="@string/title_activity_notice_dashboard"
+            android:name=".createNotice"
+            android:label="@string/title_activity_create_notice"
             android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -25,9 +25,8 @@
         </activity>
         <activity android:name=".Register_Activity" />
         <activity android:name=".Login_Activity" />
-        <activity android:name=".MainActivity">
-
-        </activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".NoticeDashboard" />
     </application>
 
 </manifest>

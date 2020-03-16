@@ -46,7 +46,6 @@ public class createNotice extends AppCompatActivity {
     private File attachmentDirectory;
     private Uri uri;
     private int flag = 0;
-    private int type = 0;
     private ImageView i;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +57,8 @@ public class createNotice extends AppCompatActivity {
          bannerDirectory = cw.getDir("attachment", Context.MODE_PRIVATE);
          attachmentDirectory= cw.getDir("banner",Context.MODE_PRIVATE);
 
-        ImageView imageView2=(ImageView) findViewById(R.id.imageView2);
-        TextView textView7=(TextView) findViewById(R.id.textView7);
+        ImageView imageView2= findViewById(R.id.imageView2);
+        TextView textView7= findViewById(R.id.textView7);
         i = findViewById(R.id.imageView3);
 
 
@@ -74,38 +73,18 @@ public class createNotice extends AppCompatActivity {
         Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
         chooseFile.setType("*/*");
         chooseFile = Intent.createChooser(chooseFile, "Choose a file");
-        type=1;
+        flag=1;
         startActivityForResult(chooseFile, PICKFILE_RESULT_CODE);
     }
 
     public void BannerImageUpload(View view){
-        type=2;
+
         Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
         chooseFile.setType("image/*");
         chooseFile = Intent.createChooser(chooseFile, "Choose an image");
+        flag=2;
         startActivityForResult(chooseFile, PICKFILE_RESULT_CODE);
 
-    }
-
-
-    private void copy(File source, File destination) throws IOException {
-
-        FileChannel in = new FileInputStream(source).getChannel();
-        FileChannel out = new FileOutputStream(destination).getChannel();
-
-        try {
-            in.transferTo(0, in.size(), out);
-        }  catch (IOException e) {
-            e.printStackTrace();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }finally {
-            if (in != null)
-                in.close();
-            if (out != null)
-                out.close();
-        }
     }
 
     private String saveToInternalStorage(Bitmap bitmapImage, String imageName, String fileName, String filePath) throws IOException {
@@ -117,13 +96,13 @@ public class createNotice extends AppCompatActivity {
                     fn = new FileOutputStream(destination);
                     byte[] mybytes = filePath.getBytes();
                     fn.write(mybytes);
-                    File file = new File(getApplicationContext().getFilesDir(), fileName);
-                    if (file != null) {
+                    File file = new File(attachmentDirectory, fileName);
+                    if (file.exists()) {
                         Snackbar.make(v, "Document Saved Successfully",
                                 Snackbar.LENGTH_LONG)
                                 .show();
                     } else {
-                        Snackbar.make(v, "Error in uploading document",
+                        Snackbar.make(v, "File uploaded but not saved",
                                 Snackbar.LENGTH_LONG)
                                 .show();
                     }
@@ -134,52 +113,38 @@ public class createNotice extends AppCompatActivity {
         else {
 
             File destination;
-            if(flag==1 || type==1) {
-                destination = new File(attachmentDirectory, imageName);
+            if(flag==1) {
+                    destination = new File(attachmentDirectory, imageName);
             }
             else {
                 destination = new File(bannerDirectory, imageName);
+
             }
+            flag=0;
+
 
             FileOutputStream fos = null;
             try {
                 fos = new FileOutputStream(destination);
-               // byte[] data = filePath.getBytes();
-                //Bitmap bmp = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-                //ByteBuffer buffer = ByteBuffer.wrap(data);
-                //buffer.rewind();
-                //bmp.copyPixelsFromBuffer(buffer);
-
-
-
-                //bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                FileInputStream in = new FileInputStream(new File(filePath));
-                int cursor;
-                while((cursor = in.read())!=-1){
-                    fos.write(cursor);
-                }
-                //byte[] mybytes = filePath.getBytes();
-                //fos.write(mybytes);
-                final File file1 = new File(getApplicationContext().getFilesDir(), imageName);
-                Snackbar.make(v, "Image Saved Successfully",
-                        Snackbar.LENGTH_LONG)
-                        .setAction("Show", new View.OnClickListener() {
-
-                            @Override
-                            public void onClick(View view) {
-                                Bitmap myBitmap = BitmapFactory.decodeFile(file1.getAbsolutePath());
-                                i.setImageBitmap(myBitmap);
-                            }
-                        })
-                        .show();
-                /*if(file1.exists()) {
-                }
-                else
-                {
-                    Snackbar.make(v, "Error in uploading image",
+                bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                final File file1 = new File(String.valueOf(destination));
+                if(file1.exists()) {
+                    Snackbar.make(v, "Image Saved Successfully",
                             Snackbar.LENGTH_LONG)
                             .show();
-                }*/
+                }else{
+                    Snackbar.make(v, "Image Save not worked",
+                            Snackbar.LENGTH_LONG)
+                            .setAction("Show", new View.OnClickListener() {
+
+                                @Override
+                                public void onClick(View view) {
+
+                                    //i.setImageBitmap(myBitmap);
+                                }
+                            })
+                            .show();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (Exception e){
@@ -218,7 +183,11 @@ public class createNotice extends AppCompatActivity {
 
     public void  att_camera(View view)
     {
-        flag = 1;
+        if(view.getId()==R.id.textView7 || view.getId()==R.id.imageView2){
+        flag = 1;}
+        else{
+            flag=2;
+        }
         Intent i2=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(i2,REQUEST_IMAGE_CAPTURE);
 
@@ -249,7 +218,8 @@ public class createNotice extends AppCompatActivity {
                     Bitmap attachmentImage;
                     if(!ext.equals("pdf")&&!ext.equals("docx")&&!ext.equals("doc")&&!ext.equals("pptx")&&!ext.equals("ppt")) {
 
-                            saveToInternalStorage(null, finalName, "", path);
+                            Bitmap bitmap =  MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                            saveToInternalStorage(bitmap, finalName, "", path);
                         }
 
                     else {
