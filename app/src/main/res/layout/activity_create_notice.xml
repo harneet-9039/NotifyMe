@@ -217,9 +217,7 @@
                             android:id="@+id/spinner1"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:clickable="false"
-                            android:entries="@array/scope1"
-                            android:focusable="false"
+                            android:entries="@array/department"
                             android:gravity="end" />
 
 
@@ -245,7 +243,7 @@
                             android:id="@+id/spinner2"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:entries="@array/scope1"
+                            android:entries="@array/course"
                             android:gravity="end" />
 
 
@@ -271,7 +269,7 @@
                             android:id="@+id/spinner3"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:entries="@array/scope1"
+                            android:entries="@array/year"
                             android:gravity="end" />
 
 
