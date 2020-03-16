@@ -21,4 +21,10 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
 
+    <string-array name="scope1">
+        <item>scope</item>
+        <item>Public</item>
+        <item>Private</item>
+    </string-array>
+
 </resources>
