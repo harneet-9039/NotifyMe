@@ -24,7 +24,9 @@
     <string-array name="scope1">
         <item>scope</item>
         <item>Public</item>
-        <item>Private</item>
+        <item>Department Level</item>
+        <item>Course Level</item>
+        <item>Year Level</item>
     </string-array>
 
     <string-array name="course">

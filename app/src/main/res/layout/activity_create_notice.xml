@@ -415,16 +415,20 @@
                 app:layout_constraintStart_toEndOf="@+id/imageView3"
                 app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
-            <Button
+            <TextView
                 android:id="@+id/counter_attachment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:backgroundTint="#00A5FF"
                 android:ellipsize="none"
+                android:background="@drawable/circleshape"
                 android:minWidth="0dip"
+                android:textAlignment="center"
                 android:minHeight="0dip"
+                android:onClick="counter_attachment"
                 android:text="1"
                 android:textColor="@color/white"
                 android:textSize="10sp"
@@ -536,16 +540,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView11"
                 app:layout_constraintVertical_bias="0.233" />
 
-            <Button
+            <TextView
                 android:id="@+id/counter_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:textAlignment="center"
+                android:layout_marginEnd="8dp"
                 android:backgroundTint="#00A5FF"
+                android:background="@drawable/circleshape"
                 android:ellipsize="none"
                 android:minWidth="0dip"
                 android:minHeight="0dip"
+                android:onClick="counter_image"
                 android:text="1"
                 android:textColor="@color/white"
                 android:textSize="10sp"
