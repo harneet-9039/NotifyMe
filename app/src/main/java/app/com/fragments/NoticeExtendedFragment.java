@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,8 @@ public class NoticeExtendedFragment extends DialogFragment {
 public static final String TAG = "example_dialog";
 
 private Toolbar toolbar;
-private TextView name, designation, course, date, contact, desc;
+private AppBarLayout appBarLayout;
+private TextView name, designation, course, date, contact, desc, title;
 private ImageView banner;
 private static Context ctx;
 private static Notice record;
@@ -64,8 +66,10 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.notice_extended_view, container, false);
         toolbar = view.findViewById(R.id.viewtoolbar);
+        appBarLayout = view.findViewById(R.id.appbar);
         name = view.findViewById(R.id.name_extended);
         designation = view.findViewById(R.id.designation_extended);
+        title = view.findViewById(R.id.title_extended);
         course = view.findViewById(R.id.course_extended);
         contact = view.findViewById(R.id.contact_extended);
         date = view.findViewById(R.id.date_extended);
@@ -83,8 +87,7 @@ public void onClick(View v) {
         NoticeExtendedFragment.this.dismiss();
         }
         });
-        toolbar.setTitle(record.getTitle());
-        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        title.setText(record.getTitle());
         name.setText(record.getName());
         designation.setText(record.getIsCoordinator());
         course.setText(record.getCourse());
@@ -101,6 +104,18 @@ public void onClick(View v) {
         Glide.with(ctx)
                 .load(record.getImages())
                 .into(banner);
+    }
+    if(record.getPriority().equals("1")){
+            appBarLayout.setBackgroundColor(getResources().getColor(R.color.highpriority));
+            title.setTextColor(getResources().getColor(R.color.highpriority));
+    }
+    else if(record.getPriority().equals("2")){
+            appBarLayout.setBackgroundColor(getResources().getColor(R.color.mediumpriority));
+            title.setTextColor(getResources().getColor(R.color.mediumpriority));
+    }
+    else{
+            appBarLayout.setBackgroundColor(getResources().getColor(R.color.lowpriority));
+            title.setTextColor(getResources().getColor(R.color.lowpriority));
     }
 
 }
