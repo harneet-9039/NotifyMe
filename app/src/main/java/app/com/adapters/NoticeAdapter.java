@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -29,19 +30,22 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
     private Context c;
     private ArrayList<Notice> noticeModelArrayList;
     private ArrayList<Notice> noticeModelArrayListFilter;
+    private OnItemClickListener onItemClickListener;
 
-    public NoticeAdapter(Context ctx, ArrayList<Notice> noticeModelArrayList){
+
+    public NoticeAdapter(Context ctx, ArrayList<Notice> noticeModelArrayList, OnItemClickListener onItemClickListener){
         c = ctx;
         inflater = LayoutInflater.from(ctx);
         this.noticeModelArrayList = noticeModelArrayList;
         noticeModelArrayListFilter = noticeModelArrayList;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
     public NoticeAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view = inflater.inflate(R.layout.singlenotice_view, parent, false);
-        MyViewHolder holder = new MyViewHolder(view);
+        MyViewHolder holder = new MyViewHolder(view,onItemClickListener);
         return holder;
     }
 
@@ -105,6 +109,12 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         return noticeModelArrayListFilter.size();
     }
 
+    public interface OnItemClickListener{
+        void onItemClick(int position);
+    }
+
+
+
     @Override
     public Filter getFilter() {
         return new Filter() {
@@ -144,12 +154,12 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         };
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder{
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView name, desgination, priority, title, desc, date;
         ImageView bannerImage;
-
-        public MyViewHolder(View itemView) {
+        OnItemClickListener onItemClickListener;
+        public MyViewHolder(View itemView, OnItemClickListener onItemClickListener) {
             super(itemView);
 
             //contact = itemView.findViewById(R.id.contact);
@@ -161,8 +171,14 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
             title = itemView.findViewById(R.id.title);
             desc = itemView.findViewById(R.id.desc);
             date = itemView.findViewById(R.id.date);
+            itemView.setOnClickListener(this);
+            this.onItemClickListener = onItemClickListener;
 
         }
 
+        @Override
+        public void onClick(View view) {
+        onItemClickListener.onItemClick(getAdapterPosition());
+        }
     }
 }

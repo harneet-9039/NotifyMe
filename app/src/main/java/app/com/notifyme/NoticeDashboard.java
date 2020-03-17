@@ -2,6 +2,7 @@ package app.com.notifyme;
 
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -40,11 +42,14 @@ import app.com.common.CheckConnection;
 import app.com.common.GlobalMethods;
 import app.com.common.Singleton;
 import app.com.fragments.FilterFragment;
+import app.com.fragments.NoticeExtendedFragment;
 import app.com.models.Notice;
 
 import android.view.Menu;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -59,7 +64,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NoticeDashboard extends AppCompatActivity {
+public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.OnItemClickListener {
 
     private AppBarConfiguration mAppBarConfiguration;
     private List<Notice> noticeListData;
@@ -68,7 +73,11 @@ public class NoticeDashboard extends AppCompatActivity {
     SwipeRefreshLayout swipeRefreshLayout;
     private ProgressDialog progressDialog;
     private RecyclerView.LayoutManager SLayout;
-    View v;
+    private View v;
+    private ArrayList<Notice> noticeModelArrayList;
+
+    private TextView name, desgination, priority, title, desc, date, contact,course;
+    private ImageView bannerImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,10 +105,16 @@ public class NoticeDashboard extends AppCompatActivity {
             UpdateSearchView(simpleSearchView);
             progressDialog = new ProgressDialog(this);
 
-            findViewById(R.id.sortbutton).setOnClickListener(new View.OnClickListener() {
+            findViewById(R.id.filterbutton).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     openDialog();
+                }
+            });
+            findViewById(R.id.sortbutton).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
                 }
             });
 
@@ -141,7 +156,7 @@ public class NoticeDashboard extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 Log.d("HAR",response);
-                ArrayList<Notice> noticeModelArrayList = new ArrayList<>();
+                 noticeModelArrayList = new ArrayList<>();
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (jsonObject.getString("status").equals("true")) {
@@ -201,7 +216,7 @@ public class NoticeDashboard extends AppCompatActivity {
 
 
 
-                noticeAdapter = new NoticeAdapter(NoticeDashboard.this,noticeModelArrayList);
+                noticeAdapter = new NoticeAdapter(NoticeDashboard.this,noticeModelArrayList,NoticeDashboard.this);
                 noticeView.setAdapter(noticeAdapter);
                 progressDialog.dismiss();
 
@@ -281,4 +296,50 @@ public class NoticeDashboard extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+    @Override
+    public void onItemClick(int position) {
+        Notice rowRecord = noticeModelArrayList.get(position);
+        NoticeExtendedFragment.display(getSupportFragmentManager(),rowRecord, NoticeDashboard.this);
+
+            //contact = itemView.findViewById(R.id.contact);
+
+        /*AlertDialog.Builder dialog = new AlertDialog.Builder(NoticeDashboard.this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.notice_extended_view, null);
+        dialog.setView(dialogView);
+        name = dialogView.findViewById(R.id.name_extended);
+        //email = itemView.findViewById(R.id.email);
+        desgination = dialogView.findViewById(R.id.designation_extended);
+        bannerImage = dialogView.findViewById(R.id.bannerimg_extended);
+        priority = dialogView.findViewById(R.id.priority_extended);
+        title = dialogView.findViewById(R.id.title_extended);
+        desc = dialogView.findViewById(R.id.desc_extended);
+        date = dialogView.findViewById(R.id.date_extended);
+        contact = dialogView.findViewById(R.id.contact_extended);
+        course = dialogView.findViewById(R.id.course_extended);
+
+        name.setText(rowRecord.getName());
+        desgination.setText(rowRecord.getIsCoordinator());
+        Glide.with(NoticeDashboard.this)
+                .load(rowRecord.getImages())
+                .into(bannerImage);
+        priority.setText(rowRecord.getPriority());
+        title.setText(rowRecord.getTitle());
+        course.setText(rowRecord.getCourse());
+        desc.setText(rowRecord.getDescription());
+        date.setText(rowRecord.getTimestamp());
+        contact.setText(rowRecord.getContact());
+
+
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                    }
+                });
+                dialog.setNegativeButton("Cancel", null).create();
+        AlertDialog alertDialog = dialog.create();
+        alertDialog.show();*/
+
+
+    }
 }
