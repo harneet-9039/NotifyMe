@@ -4,73 +4,134 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/app_bar_notice_dashboard">
+    android:animateLayoutChanges="true"
+    android:id="@+id/root">
 
-    <fragment
-        android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
+
+        <fragment
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:defaultNavHost="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.961"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            app:navGraph="@navigation/mobile_navigation" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swiperefresh_items"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/mobile_navigation" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:weightSum="12">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/inner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
 
+            <TextView
+                android:id="@+id/writeheretext"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="72dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/rounded_theme"
+                android:gravity="center"
+                android:text="Create Notice here..."
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/inner">
 
-        <LinearLayout
-            style="@style/parent"
-            android:layout_height="252dp"
-            android:layout_weight="3"
-            android:background="@drawable/login_shape_bk"
-            android:orientation="vertical">
-
+            </TextView>
 
             <SearchView
-                android:id="@+id/searchview"
-                android:layout_width="250dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="21dp"
-                android:layout_marginTop="40dp"
-                android:layout_weight="3"
-                android:layout_gravity="left"
-                android:background="@drawable/rounded_white"
+                android:id="@+id/searchView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/searchview"
                 android:ems="10"
+                android:paddingLeft="10dp"
+                android:queryBackground="@android:color/transparent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/writeheretext"
                 app:queryHint="Search Here" />
 
+
             <Button
-                android:id="@+id/filter_button"
-                android:layout_width="wrap_content"
-                android:layout_gravity="right"
+                android:id="@+id/sortbutton"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="65dp"
-                android:layout_marginTop="-60dp"
-                android:background="@drawable/register_button"
-                android:text="Filter" />
+                android:background="@drawable/footer_button"
+                android:text="Sort"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/filterbutton"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintVertical_weight="1"></Button>
 
-            <EditText
-                android:id="@+id/editText"
-                android:layout_width="250dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="21dp"
-                android:layout_marginTop="50dp"
-                android:layout_weight="3"
-                android:background="@drawable/rounded_white"
-                android:ems="10"
-                android:hint="Write Something here"
-                android:inputType="textPersonName"
-                android:textAlignment="center" />
+            <Button
+                android:id="@+id/filterbutton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/footer_button"
+                android:text="Filter"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/sortbutton"
+                app:layout_constraintTop_toBottomOf="@+id/recyclesroll"
+                app:layout_constraintVertical_bias="1.0"
+                app:layout_constraintVertical_weight="1"></Button>
 
 
-        </LinearLayout>
+            <ScrollView
+                android:id="@+id/recyclesroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="192dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="56dp"
+                app:layout_constraintBottom_toTopOf="@id/sortbutton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/searchView"
+                app:layout_constraintVertical_bias="0.029999971">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </ScrollView>
 
 
-    </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
