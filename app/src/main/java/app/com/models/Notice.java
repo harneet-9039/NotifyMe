@@ -1,6 +1,7 @@
 package app.com.models;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Notice {
 
@@ -130,6 +131,32 @@ public class Notice {
     public void setImages(String bannerImage) {
         this.Banner = bannerImage;
     }
+
+    public static Comparator<Notice> priorityComparator = new Comparator<Notice>() {
+
+        public int compare(Notice s1, Notice s2) {
+            String priorityOne = s1.getPriority().toUpperCase();
+            String prioritySecond = s2.getPriority().toUpperCase();
+
+            //ascending order
+            return priorityOne.compareTo(prioritySecond);
+
+            //descending order
+            //return StudentName2.compareTo(StudentName1);
+        }};
+
+    public static Comparator<Notice> dateCompartor = new Comparator<Notice>() {
+
+        public int compare(Notice s1, Notice s2) {
+            String dateOne = s1.getTimestamp().toUpperCase();
+            String dateSecond = s2.getTimestamp().toUpperCase();
+
+            //ascending order
+            return dateOne.compareTo(dateSecond);
+
+            //descending order
+            //return StudentName2.compareTo(StudentName1);
+        }};
 
 }
 
