@@ -16,8 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -169,7 +168,7 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
     }
 
             public ArrayList<Notice> returnToActivity(){
-        if(noticeModelArrayListFilter.size()>1) {
+        if(noticeModelArrayListFilter.size()>=1) {
             return noticeModelArrayListFilter;
         }
         return noticeModelArrayList;

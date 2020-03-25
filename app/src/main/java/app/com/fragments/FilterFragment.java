@@ -1,75 +1,53 @@
 package app.com.fragments;
 
-import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import app.com.notifyme.R;
 
-public class FilterFragment extends DialogFragment {
-    public static final String TAG = "example_dialog";
-
-    private Toolbar toolbar;
-
-    public static FilterFragment display(FragmentManager fragmentManager) {
-        FilterFragment filterDialog = new FilterFragment();
-        filterDialog.show(fragmentManager, TAG);
-        return filterDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+public class FilterFragment extends BottomSheetDialogFragment
+        implements View.OnClickListener {
+    public static final String TAG = "ActionBottomDialog";
+    private ItemClickListener mListener;
+    public static FilterFragment newInstance() {
+        return new FilterFragment();
     }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_FullScreenDialog);
+    @Nullable @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.filter_bottomsheet, container, false);
     }
-
+    @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        //view.findViewById(R.id.sort_priority).setOnClickListener(this);
+        //view.findViewById(R.id.sort_date).setOnClickListener(this);
+    }
     @Override
-    public void onStart() {
-        super.onStart();
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            dialog.getWindow().setLayout(width, height);
-            dialog.getWindow().setWindowAnimations(R.style.AppTheme_Slide);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ItemClickListener) {
+            mListener = (ItemClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement ItemClickListener");
         }
     }
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.filter_dialog, container, false);
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+    @Override public void onClick(View view) {
+        dismiss();
+    }
+    public interface ItemClickListener {
 
-        toolbar = view.findViewById(R.id.toolbar);
-
-        return view;
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FilterFragment.this.dismiss();
-            }
-        });
-        toolbar.setTitle("Filters");
-        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
-        toolbar.inflateMenu(R.menu.filtermenu);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                FilterFragment.this.dismiss();
-                return true;
-            }
-        });
-    }
 }

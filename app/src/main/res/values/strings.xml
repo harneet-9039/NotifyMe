@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NotifyMe</string>
     <string name="register">REGISTER</string>
-    <string name="login_email_hint">Email</string>
+    <string name="login_email_hint">Registration Number</string>
     <string name="login_password_hint">Password</string>
     <string name="signup_login_hint">Already have an account? Sign In</string>
     <string name="login_signup_hint">Don\'t have an account? Sign Up</string>
@@ -30,6 +30,28 @@
         <item>Year Level</item>
     </string-array>
 
+    <string-array name="scope_values">
+        <item>scope</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <string-array name="priority">
+        <item>---Select Priority---</item>
+        <item>Low</item>
+        <item>Intermediate</item>
+        <item>High</item>
+    </string-array>
+
+    <string-array name="priority_values">
+        <item>---Select Priority---</item>
+        <item>3</item>
+        <item>2</item>
+        <item>1</item>
+    </string-array>
+
     <string-array name="course">
         <item>Course</item>
     </string-array>
@@ -45,5 +67,11 @@
         <item>III</item>
         <item>IV</item>
     </string-array>
-
+    <string-array name="year_values">
+        <item>Year</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
 </resources>

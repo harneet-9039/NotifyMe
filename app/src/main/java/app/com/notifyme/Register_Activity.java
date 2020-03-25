@@ -2,6 +2,8 @@ package app.com.notifyme;
 
 import android.app.ProgressDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +45,7 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
     private ArrayList<Course> Course;
 
     private static int DepartmentID, CourseID;
-
+    private View v;
     private Button Register;
     private EditText Name, Reg_no, year, Email, Contact, password;
 
@@ -52,9 +55,9 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-    progressDialog = new ProgressDialog(this);
-    progressDialog.setMessage("Please Wait");
-
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please Wait");
+        v = findViewById(R.id.main);
         InitializeUIComponent();
 
     }
@@ -221,30 +224,43 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
                 Log.d("HAR",response.toString());
                 try {
                     JSONObject j = new JSONObject(response);
-                    String data = (String) j.get("code");
+                    int data = (int) j.get("code");
 
                     //JSONObject jsonObject1 = data.getJSONObject(0);
-                    if(data.toString().equals("345")){
-                        Toast.makeText(Register_Activity.this,"Internal Server Error",Toast.LENGTH_LONG);
+                    if(data==345){
+                        Snackbar.make(v, "Internal Server Error",
+                                Snackbar.LENGTH_LONG)
+                                .show();
                     }
-                    else if(data.toString().equals("401")){
-                        Toast.makeText(Register_Activity.this,"Student Already registered, Please Login",Toast.LENGTH_LONG);
+                    else if(data==401){
+                        Snackbar.make(v, "Registration Success, Check your email for verification mail",
+                                Snackbar.LENGTH_LONG)
+                                .show();
                     }
-                    else if(data.toString().equals("402")){
-                        Toast.makeText(Register_Activity.this,"Email Already Exists",Toast.LENGTH_LONG);
+                    else if(data==402){
+                        Snackbar.make(v, "Email already exists",
+                                Snackbar.LENGTH_LONG)
+                                .show();
                     }
-                    else if(data.toString().equals("403")){
-                        Toast.makeText(Register_Activity.this,"Contact Already Registered",Toast.LENGTH_LONG);
+                    else if(data==403){
+                        Snackbar.make(v, "Contact number already registered",
+                                Snackbar.LENGTH_LONG)
+                                .show();
                     }
-                    else if(data.toString().equals("404")){
-                        Toast.makeText(Register_Activity.this,"Email Address is not" +
-                                " valid, try with different email address",Toast.LENGTH_LONG);
+                    else if(data==404){
+                        Snackbar.make(v, "Email Address is not valid, try with different email address",
+                                Snackbar.LENGTH_LONG)
+                                .show();
                     }
-                    else if(data.toString().equals("501")){
-                        Toast.makeText(Register_Activity.this,"Internal Database Error",Toast.LENGTH_LONG);
+                    else if(data==501){
+                        Snackbar.make(v, "Internal database error",
+                                Snackbar.LENGTH_LONG)
+                                .show();
                     }
-                    else if(data.toString().equals("200")){
-                        Toast.makeText(Register_Activity.this,"Registration Success",Toast.LENGTH_LONG);
+                    else if(data==200){
+                        Snackbar.make(v, "Registration Success, Check your email for verification email",
+                                Snackbar.LENGTH_LONG)
+                                .show();
                     }
 
                     progressDialog.dismiss();
@@ -289,6 +305,11 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
     if(view.getId()==R.id.RegisterUser)
     {
         RegisterUser();
+    }
+    else{
+        Intent in=new Intent(Register_Activity.this, Login_Activity.class);
+        startActivity(in);
+        finish();
     }
     }
 }

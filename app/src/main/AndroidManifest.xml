@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -17,15 +18,20 @@
         <activity
             android:name=".NoticeDashboard"
             android:windowSoftInputMode="adjustPan">
+
+        </activity>
+        <activity android:name=".Register_Activity" />
+        <activity android:name=".Login_Activity">
+        </activity>
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Register_Activity" />
-        <activity android:name=".Login_Activity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".createNotice" />
+        <activity android:name=".createNotice"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
     </application>
 
 </manifest>

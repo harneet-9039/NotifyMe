@@ -165,7 +165,7 @@ public void onClick(View v) {
                attachmentNameList.add(nameLong.substring(nameLong.lastIndexOf("-") + 1));
            }
        }catch(Exception e){
-           Snackbar.make(view, "Exception Occured",
+           Snackbar.make(v, "Exception Occured",
                    Snackbar.LENGTH_LONG)
                    .show();
        }

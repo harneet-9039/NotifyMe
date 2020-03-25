@@ -6,6 +6,7 @@
     <color name="highpriority">#CD5C5C</color>
     <color name="mediumpriority">#4C65F4</color>
     <color name="lowpriority">#30D2E6</color>
+    <color name="grey">#808080</color>
 
 
     <!--colors for modern ui-->

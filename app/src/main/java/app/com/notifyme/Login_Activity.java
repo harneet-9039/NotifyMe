@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -18,7 +19,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,7 +37,8 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
     private TextView Register_Link;
     private EditText UserName, Password;
     private Button LoginUser;
-
+    private SharedPreferences.Editor editor;
+    private View v;
     private ProgressDialog progressDialog;
 
 
@@ -41,8 +46,10 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_);
+        v = findViewById(R.id.main);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
+        editor = pref.edit();
         InitializeUIComponent();
 
 
@@ -53,7 +60,7 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
         Register_Link = findViewById(R.id.Register_Link);
         LoginUser = findViewById(R.id.Login);
         UserName = findViewById(R.id.username);
-        Password = findViewById(R.id.password);
+        Password = findViewById(R.id.editTextPassword);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Logging you...");
 
@@ -63,6 +70,7 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
 
     private void LoginUser()
     {
+        final Intent homeintent=new Intent(Login_Activity.this,NoticeDashboard.class);
         final String URL = GlobalMethods.getURL()+"login";
         progressDialog.show();
 
@@ -75,27 +83,110 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
                     JSONObject j = new JSONObject(response);
                     String data = (String) j.get("code");
 
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONArray dataArray = jsonObject.getJSONArray("data");
+                    JSONObject dataobj = dataArray.getJSONObject(0);
+
                         //JSONObject jsonObject1 = data.getJSONObject(0);
                         if(data.toString().equals("345")){
-                            Toast.makeText(Login_Activity.this,"Internal Server Error",Toast.LENGTH_LONG);
+                            progressDialog.dismiss();
+                            Snackbar.make(v, "Internal Server Error",
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
                         }
                         else if(data.toString().equals("400")){
-                            Toast.makeText(Login_Activity.this,"Username and password do not match",Toast.LENGTH_LONG);
+                            progressDialog.dismiss();
+                            Snackbar.make(v, "Username and password do not match",
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
                         }
                         else if(data.toString().equals("401")){
-                            Toast.makeText(Login_Activity.this,"Register First",Toast.LENGTH_LONG);
+                            progressDialog.dismiss();
+                            Snackbar.make(v, "Register to continue login",
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
                         }
                         else if(data.toString().equals("402")){
-                            Toast.makeText(Login_Activity.this,"Account Not Activated",Toast.LENGTH_LONG);
+                            progressDialog.dismiss();
+                            Snackbar.make(v, "Account not activated, please check your email",
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
                         }
                         else if(data.toString().equals("100")){
-                            Toast.makeText(Login_Activity.this,"Login Success",Toast.LENGTH_LONG);
+                            editor.putString("registrationNumber",dataobj.getString("Reg_id"));
+                            editor.putString("name",dataobj.getString("name"));
+                            editor.putInt("departmentid",dataobj.getInt("dept_id"));
+                            editor.putInt("courseid",dataobj.getInt("course_id"));
+                            editor.putString("departmentname",dataobj.getString("Dept_name"));
+                            editor.putString("coursename",dataobj.getString("Course_branch"));
+                            editor.putInt("year",dataobj.getInt("year"));
+                            editor.putString("email",dataobj.getString("email_id"));
+                            editor.putString("contact",dataobj.getString("contact"));
+                            editor.putString("password",Password.getText().toString());
+                            editor.putInt("isCoordinator",0);
+                            editor.commit();
+                            progressDialog.dismiss();
+                            startActivity(homeintent);
+                            finish();
+                        }
+                        else if(data.equals("200")){
+                            editor.putString("registrationNumber",dataobj.getString("Reg_id"));
+                            editor.putString("name",dataobj.getString("name"));
+                            editor.putInt("departmentid",dataobj.getInt("dept_id"));
+                            editor.putInt("courseid",dataobj.getInt("course_id"));
+                            editor.putString("departmentname",dataobj.getString("Dept_name"));
+                            editor.putString("coursename",dataobj.getString("Course_branch"));
+                            editor.putInt("year",dataobj.getInt("year"));
+                            editor.putString("email",dataobj.getString("email_id"));
+                            editor.putString("contact",dataobj.getString("contact"));
+                            editor.putString("password",Password.getText().toString());
+                            editor.putInt("isCoordinator",1);
+                            editor.commit();
+                            progressDialog.dismiss();
+                            startActivity(homeintent);
+                            finish();
+                        }
+                        else if(data.equals("300")){
+                            Gson gson = new Gson();
+                            editor.putString("fregistrationNumber",dataobj.getString("Faculty_id"));
+                            editor.putString("fname",dataobj.getString("Name"));
+                            editor.putInt("fdepartmentid",dataobj.getInt("dept_id"));
+                            editor.putString("fdepartmentname",dataobj.getString("Dept_name"));
+                            editor.putString("femail",dataobj.getString("email_id"));
+                            editor.putString("fcontact",dataobj.getString("contact"));
+                            editor.putString("fdesignation",dataobj.getString("designation"));
+                            String[] courses = dataobj.getString("course_name").split(",");
+                            String courseJSONString = gson.toJson(courses);
+                            editor.putString("fcourse",courseJSONString);
+                            String[] year = dataobj.getString("year").split(",");
+                            editor.putString("password",Password.getText().toString());
+                            String yearJSONString = gson.toJson(year);
+                            editor.putString("fyear",yearJSONString);
+                            String[] courseName = dataobj.getString("course_name").split(",");
+                            String courseNameJSONString = gson.toJson(courseName);
+                            editor.putString("fcoursename",courseNameJSONString);
+                            String[] courseDeptID = dataobj.getString("Course_Dept_id").split(",");
+                            String courseDeptIDJSONString = gson.toJson(courseDeptID);
+                            editor.putString("fcoursedeptID",courseDeptIDJSONString);
+                            String[] courseDeptName = dataobj.getString("Course_Dept_name").split(",");
+                            String courseDeptNameJSONString = gson.toJson(courseDeptName);
+                            editor.putString("fcoursedeptName",courseDeptNameJSONString);
+                            editor.putInt("isCoordinator",2);
+                            editor.commit();
+                            progressDialog.dismiss();
+                            startActivity(homeintent);
+                            finish();
                         }
 
-                    progressDialog.dismiss();
+
+
+
                 }
                 catch (JSONException e){
                     progressDialog.dismiss();
+                    Snackbar.make(v, "Unexpected response from server",
+                            Snackbar.LENGTH_LONG)
+                            .show();
                 }
 
             }
@@ -105,6 +196,9 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
             public void onErrorResponse(VolleyError error) {
                 Log.e("HAR",error.toString());
                 progressDialog.dismiss();
+                Snackbar.make(v, "Restart Server",
+                        Snackbar.LENGTH_LONG)
+                        .show();
 
 
             }
@@ -129,6 +223,7 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
         {
             Intent in=new Intent(Login_Activity.this, Register_Activity.class);
             startActivity(in);
+            finish();
         }
         else if(view.getId() == R.id.Login)
         {
