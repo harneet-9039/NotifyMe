@@ -335,16 +335,9 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                                     attachmentList.add(path);
                                 }
                                 noticeModel.setAttachments(attachmentList);
-                                SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+
                                 String dateOfCreation = dataobj.getString("date_time");
-                                try {
-
-                                    Date date = formatter.parse(dateOfCreation);
-                                    noticeModel.setTimestamp(formatter.format(date));
-
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
+                                noticeModel.setTimestamp(dateOfCreation);
                                 noticeModelArrayList.add(noticeModel);
 
                             }

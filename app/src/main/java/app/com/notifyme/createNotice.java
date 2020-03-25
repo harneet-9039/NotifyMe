@@ -904,7 +904,13 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
         for (File file2 : childfileAtt) {
             multipartUploadRequest.addFileToUpload(file2.getPath(),"attachment");
         }
-        multipartUploadRequest.addParameter("studentID","2017CA48");
+        if(pref.getString("registrationNumber","")!=""){
+            multipartUploadRequest.addParameter("studentID",pref.getString("registrationNumber",""));
+        }
+        else{
+            multipartUploadRequest.addParameter("facultyID",pref.getString("fregistrationNumber",""));
+        }
+
         multipartUploadRequest.addParameter("desc",noticeText.getText().toString());
         multipartUploadRequest.addParameter("title",title);
         multipartUploadRequest.addParameter("validPeriod",df.format(now));

@@ -107,7 +107,13 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         holder.title.setText(noticeModelArrayListFilter.get(position).getTitle());
         holder.title.setTextColor(c.getResources().getColor(R.color.colorAccent));
         holder.desc.setText(noticeModelArrayListFilter.get(position).getDescription());
-        holder.date.setText(noticeModelArrayListFilter.get(position).getTimestamp());
+        String date = noticeModelArrayListFilter.get(position).getTimestamp();
+        Log.d("HAR",date);
+        String updatedDate = date.substring(0,date.indexOf("T"));
+        String[] parts = updatedDate.split("-");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(parts[2]+"-"+parts[1]+"-"+parts[0]);
+        holder.date.setText(stringBuilder);
         if(noticeModelArrayListFilter.get(position).getIsCoordinator().equals("0")||
                 noticeModelArrayListFilter.get(position).getIsCoordinator().equals("1")){
             holder.desgination.setText("Student Coordinator");
