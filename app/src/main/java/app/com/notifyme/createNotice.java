@@ -549,6 +549,7 @@ public class createNotice extends AppCompatActivity {
     public void arrow_click(View view) {
         Intent i1=new Intent(this,NoticeDashboard.class);
         startActivity(i1);
+        finish();
     }
 
     public void counter_attachment(View view){

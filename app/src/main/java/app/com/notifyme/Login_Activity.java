@@ -50,7 +50,7 @@ public class Login_Activity extends AppCompatActivity implements View.OnClickLis
 
     private void InitializeUIComponent()
     {
-        Register_Link=(TextView) findViewById(R.id.Register_Link);
+        Register_Link = findViewById(R.id.Register_Link);
         LoginUser = findViewById(R.id.Login);
         UserName = findViewById(R.id.username);
         Password = findViewById(R.id.password);

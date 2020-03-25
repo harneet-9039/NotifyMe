@@ -20,6 +20,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
 import app.com.models.Notice;
@@ -32,13 +33,25 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
     private ArrayList<Notice> noticeModelArrayListFilter;
     private OnItemClickListener onItemClickListener;
 
+    public void swap(List list){
+        if (noticeModelArrayListFilter != null) {
+            noticeModelArrayListFilter.clear();
+            noticeModelArrayListFilter.addAll(list);
+        }
+        else {
+            noticeModelArrayListFilter.addAll(list);
+        }
+        notifyDataSetChanged();
+    }
 
     public NoticeAdapter(Context ctx, ArrayList<Notice> noticeModelArrayList, OnItemClickListener onItemClickListener){
         c = ctx;
         inflater = LayoutInflater.from(ctx);
         this.noticeModelArrayList = noticeModelArrayList;
-        noticeModelArrayListFilter = noticeModelArrayList;
+        this.noticeModelArrayListFilter = new ArrayList<>();
+        this.noticeModelArrayListFilter.addAll(noticeModelArrayList);
         this.onItemClickListener = onItemClickListener;
+
     }
 
     @Override
@@ -93,6 +106,7 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
             holder.priority.setTypeface(null, Typeface.BOLD);
         }
         holder.title.setText(noticeModelArrayListFilter.get(position).getTitle());
+        holder.title.setTextColor(c.getResources().getColor(R.color.colorAccent));
         holder.desc.setText(noticeModelArrayListFilter.get(position).getDescription());
         holder.date.setText(noticeModelArrayListFilter.get(position).getTimestamp());
         if(noticeModelArrayListFilter.get(position).getIsCoordinator().equals("0")||
@@ -110,7 +124,7 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
     }
 
     public interface OnItemClickListener{
-        void onItemClick(int position);
+        void onItemClick(ArrayList<Notice> notice,View v, int position);
     }
 
 
@@ -154,6 +168,12 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         };
     }
 
+            public ArrayList<Notice> returnToActivity(){
+        if(noticeModelArrayListFilter.size()>1) {
+            return noticeModelArrayListFilter;
+        }
+        return noticeModelArrayList;
+        }
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView name, desgination, priority, title, desc, date;
@@ -178,7 +198,8 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
 
         @Override
         public void onClick(View view) {
-        onItemClickListener.onItemClick(getAdapterPosition());
+        onItemClickListener.onItemClick(noticeModelArrayListFilter,view,getAdapterPosition());
+
         }
     }
 }

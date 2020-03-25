@@ -22,13 +22,11 @@
             android:id="@+id/bannerimg"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="24dp"
-            android:layout_marginEnd="16dp"
             android:maxWidth="50dp"
             app:srcCompat="@drawable/banner"
             card_view:layout_constraintBottom_toTopOf="@id/name"
-            card_view:layout_constraintEnd_toStartOf="@+id/name"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toTopOf="@id/main" />
 
@@ -37,14 +35,13 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
             android:maxWidth="200dp"
             android:maxLines="1"
             android:singleLine="true"
             android:text="name"
             card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintHorizontal_bias="0.15"
-            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintHorizontal_bias="0.06"
+            card_view:layout_constraintStart_toEndOf="@+id/bannerimg"
             card_view:layout_constraintTop_toBottomOf="@+id/title" />
 
         <TextView
@@ -65,7 +62,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="276dp"
-            android:maxWidth="100dp"
+            android:maxWidth="200dp"
             android:maxLines="1"
             android:singleLine="true"
             android:text="title"
