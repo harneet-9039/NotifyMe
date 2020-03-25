@@ -72,7 +72,7 @@ public void onCreate(Bundle savedInstanceState) {
         }
 
 @Override
-public void onStart() {
+public void onStart() throws NullPointerException {
         super.onStart();
         Dialog dialog = getDialog();
         if (dialog != null) {
@@ -121,7 +121,11 @@ public void onClick(View v) {
         }
         course.setText("("+record.getCourse()+")");
         contact.setText("Contact: +91-"+record.getContact());
-        date.setText(record.getTimestamp());
+        String updatedDate = record.getTimestamp().substring(0,record.getTimestamp().indexOf("T"));
+        String[] parts = updatedDate.split("-");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(parts[2]+"-"+parts[1]+"-"+parts[0]);
+        date.setText(stringBuilder);
         desc.setText(record.getDescription());
     if(record.getImages().equals("null")){
         Glide.with(ctx)
@@ -228,7 +232,7 @@ private boolean CheckPermission(){
                             })
                             .show();
                 }
-                return;
+
             }
 
             // other 'case' lines to check for other
@@ -237,7 +241,7 @@ private boolean CheckPermission(){
     }
 
 private void DownloadSource(int i){
-    DownloadManager downloadManager = (DownloadManager) ((Activity) ctx).getSystemService(Context.DOWNLOAD_SERVICE);
+    DownloadManager downloadManager = (DownloadManager) ( ctx).getSystemService(Context.DOWNLOAD_SERVICE);
     DownloadManager.Request request = new DownloadManager.Request(Uri.parse(attachmentPathList.get(i)));
     request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
             .setAllowedOverRoaming(false)
