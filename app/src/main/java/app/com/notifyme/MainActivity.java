@@ -4,13 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
+
 import androidx.appcompat.app.AppCompatActivity;
+import app.com.common.CheckConnection;
 import app.com.common.GlobalMethods;
 import app.com.common.Singleton;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.PointerIcon;
 import android.view.View;
 
 import com.android.volley.AuthFailureError;
@@ -19,7 +20,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private View v;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,17 +44,31 @@ public class MainActivity extends AppCompatActivity {
         pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
         editor = pref.edit();
         v = findViewById(R.id.main);
-        progressDialog = new ProgressDialog(this);
-        if(pref.getString("registrationNumber","")!="") {
-            LoginUser();
-        }
-        else if(pref.getString("fregistrationNumber","")!=""){
-            LoginUser();
+        boolean networkStatus = CheckConnection.getInstance(this).getNetworkStatus();
+        if(networkStatus==true) {
+
+            progressDialog = new ProgressDialog(this);
+            if (pref.getString("registrationNumber", "") != "") {
+                LoginUser();
+            } else if (pref.getString("fregistrationNumber", "") != "") {
+                LoginUser();
+            } else {
+                callSplash();
+            }
         }
         else{
-            callSplash();
+            Snackbar snackbar;
+            snackbar = Snackbar.make(v, "You are not connected to internet",
+                    Snackbar.LENGTH_LONG);
+            View snackBarView = snackbar.getView();
+            snackBarView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            snackbar.show();
+
         }
     }
+
+
+
 
     private void LoginUser()
     {
@@ -97,9 +112,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 catch (JSONException e){
                     progressDialog.dismiss();
-                    Snackbar.make(v, "Unexpected response from server",
-                            Snackbar.LENGTH_LONG)
-                            .show();
+                    Snackbar snackbar;
+                    snackbar = Snackbar.make(v, "Unexpected response from server",
+                            Snackbar.LENGTH_LONG);
+                    View snackBarView = snackbar.getView();
+                    snackBarView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    snackbar.show();
                 }
 
             }
@@ -146,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
                 else{
-                    Intent homeintent = new Intent(MainActivity.this, Login_Activity.class);
+                    Intent homeintent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(homeintent);
                     finish();
                 }

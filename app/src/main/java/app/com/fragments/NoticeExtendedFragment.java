@@ -162,11 +162,14 @@ public void onClick(View v) {
        attachmentPathList = new ArrayList<>();
        attachmentNameList = new ArrayList<>();
        try {
+           if(!(attachmentListContainer.size()<1))
+           {
            for (String record : attachmentListContainer) {
                attachmentPathList.add(record);
                String tempName = record.substring(record.lastIndexOf("/") + 1);
                String nameLong = tempName.substring(0, tempName.lastIndexOf("."));
                attachmentNameList.add(nameLong.substring(nameLong.lastIndexOf("-") + 1));
+           }
            }
        }catch(Exception e){
            Snackbar.make(v, "Exception Occured",

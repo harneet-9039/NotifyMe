@@ -21,6 +21,10 @@
             android:icon="@drawable/ic_access_time_black_24dp"
             android:title="Request Student Access" />
         <item
+            android:id="@+id/nav_request_status"
+            android:icon="@drawable/ic_history_black_24dp"
+            android:title="View Request Status" />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_block_black_24dp"
             android:title="Logout" />

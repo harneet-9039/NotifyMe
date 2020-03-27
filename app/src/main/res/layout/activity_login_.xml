@@ -5,7 +5,7 @@
     android:orientation="vertical"
     style="@style/loginParent"
     android:id="@+id/main"
-    tools:context="app.com.notifyme.Login_Activity">
+    tools:context="app.com.notifyme.LoginActivity">
     <ScrollView
         style="@style/parent">
 

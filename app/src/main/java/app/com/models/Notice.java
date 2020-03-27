@@ -19,6 +19,7 @@ public class Notice {
     private String Banner;
     private String department;
     private String course;
+    private String scope;
 
     public String getId() {
         return id;
@@ -26,6 +27,14 @@ public class Notice {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 
     public String getDepartment() {

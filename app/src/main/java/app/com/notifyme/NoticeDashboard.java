@@ -7,17 +7,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.bumptech.glide.Glide;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.util.Log;
@@ -27,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -54,33 +49,18 @@ import app.com.fragments.SortFragment;
 import app.com.models.Notice;
 
 import android.view.Menu;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CheckedTextView;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.OnItemClickListener, SortFragment.ItemClickListener, FilterFragment.ItemClickListener {
 
@@ -99,6 +79,8 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
     private View filterView, applyFilterView;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
+    private ArrayList<Notice> tempFilterList = new ArrayList<>();
+
 
 
     @Override
@@ -141,7 +123,7 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             if(pref.getInt("isCoordinator",-1)==0){
                 TextView notice = findViewById(R.id.writeheretext);
                 SearchView view = findViewById(R.id.searchView);
-                ScrollView scrollView = findViewById(R.id.recyclesroll);
+                RecyclerView scrollView = findViewById(R.id.recyclerView);
                 ConstraintLayout constraintLayout = findViewById(R.id.inner);
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.clone(constraintLayout);
@@ -181,7 +163,7 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                                     editor.clear();
                                     editor.apply();
                                     finish();
-                                    startActivity(new Intent(NoticeDashboard.this, Login_Activity.class));
+                                    startActivity(new Intent(NoticeDashboard.this, LoginActivity.class));
                                     dialogInterface.cancel();
                                 }
                             });
@@ -241,22 +223,7 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                 }
             });
 
-            inflater = LayoutInflater.from(this);
-            filterView = inflater.inflate(R.layout.filter_bottomsheet, null, false);
-            applyFilterView = inflater.inflate(R.layout.filter_applybutton_layout, null, false);
-            TextView applyFilter = applyFilterView.findViewById(R.id.applybutton);
-            applyFilter.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CheckBox publicfilter = filterView.findViewById(R.id.deptfilter);
-                    filteredArrayList = new ArrayList<>();
-                    if(publicfilter.isChecked()){
-                        for(Notice notice: noticeModelArrayList){
 
-                        }
-                    }
-                }
-            });
 
             PopulateData();
         }
@@ -268,11 +235,13 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
 
     }
 
+
     /* to remove menu item*/
     private void hideItem()
     {
         Menu nav_Menu = navigationView.getMenu();
         nav_Menu.findItem(R.id.nav_access).setVisible(false);
+        nav_Menu.findItem(R.id.nav_request_status).setVisible(false);
     }
 
     private void PopulateData(){
@@ -282,11 +251,18 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
         noticeView.setLayoutManager(SLayout);
         noticeListData = new ArrayList<>();
         LoadData();
+
+
     }
 
     private void LoadData() {
-        Log.d("HAR","sys");
-        final String URL = GlobalMethods.getURL()+"fetchNotice";
+        String URL;
+        if(pref.getString("fregistrationNumber","")!=""){
+            URL = GlobalMethods.getURL()+"faculty_fetchNotices";
+        }
+        else {
+             URL = GlobalMethods.getURL() + "fetchNotice";
+        }
         progressDialog.show();
         v =findViewById(R.id.root);
 
@@ -330,6 +306,7 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                                 noticeModel.setIsCoordinator(dataobj.getString("isCoordinator"));
                                 noticeModel.setDepartment(dataobj.getString("department"));
                                 noticeModel.setCourse(dataobj.getString("course"));
+                                noticeModel.setScope(dataobj.getString("scope"));
                                 String[] attachments = dataobj.getString("Attachments").split(",");
                                 for(String path : attachments){
                                     attachmentList.add(path);
@@ -383,12 +360,25 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> parameters = new HashMap<>();
                 // Log.d("HAR",String.valueOf(DepartmentID));
-                if(pref.getInt("departmentid",-1)!=-1)
-                parameters.put("dept_id", String.valueOf(pref.getInt("departmentid",-1)));
-                if(pref.getInt("courseid",-1)!=-1)
-                    parameters.put("course_id", String.valueOf(pref.getInt("courseid",-1)));
-                if(pref.getInt("year",-1)!=-1)
-                    parameters.put("year", String.valueOf(pref.getInt("year",-1)));
+                if(pref.getString("fregistrationNumber","")!=""){
+                    if (pref.getInt("fdepartmentid", -1) != -1) {
+                        parameters.put("dept_id", String.valueOf(pref.getInt("fdepartmentid", -1)));
+                    }
+                    if (pref.getString("fcourse", "") != "") {
+                        parameters.put("course_id", String.valueOf(pref.getString("fcourse", "")));
+                    }
+                    if (pref.getString("fyear", "") != "") {
+                        parameters.put("year", String.valueOf(pref.getString("fyear", "")));
+                    }
+                }
+                else {
+                    if (pref.getInt("departmentid", -1) != -1)
+                        parameters.put("dept_id", String.valueOf(pref.getInt("departmentid", -1)));
+                    if (pref.getInt("courseid", -1) != -1)
+                        parameters.put("course_id", String.valueOf(pref.getInt("courseid", -1)));
+                    if (pref.getInt("year", -1) != -1)
+                        parameters.put("year", String.valueOf(pref.getInt("year", -1)));
+                }
                 return parameters;
             }
         };
@@ -433,7 +423,7 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
 
     private void openDialog() {
         FilterFragment addPhotoBottomDialogFragment =
-                FilterFragment.newInstance();
+                FilterFragment.newInstance(this, noticeModelArrayList, noticeAdapter);
         addPhotoBottomDialogFragment.show(getSupportFragmentManager(),
                 FilterFragment.TAG);
     }
@@ -491,7 +481,5 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
         Collections.sort(tempNoticeArray,Notice.dateCompartor);
         noticeAdapter.swap(tempNoticeArray);
     }
-
-
 
 }

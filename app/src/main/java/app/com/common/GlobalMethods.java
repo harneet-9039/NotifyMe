@@ -3,12 +3,6 @@ package app.com.common;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import android.app.ProgressDialog;
-import org.json.JSONArray;
-
 public class GlobalMethods {
     static String URL = "https://app--notifyme.herokuapp.com/";
     //static String URL = "http://192.168.43.137:3000/";

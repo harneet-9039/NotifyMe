@@ -13,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -36,7 +35,7 @@ import app.com.common.Singleton;
 import app.com.models.Course;
 import app.com.models.Department;
 
-public class Register_Activity extends AppCompatActivity implements View.OnClickListener {
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ProgressDialog progressDialog;
     private Spinner Course_Spinner, Department_Spinner;
@@ -138,7 +137,7 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
                                 Course.add(new Course(jsonObject1.getInt("Course_id"),
                                         jsonObject1.getString("Course_branch")));
                             }
-                            Course_Spinner.setAdapter(new ArrayAdapter<Course>(Register_Activity.this,R.layout.simple_spinner_dropdown_item,Course));
+                            Course_Spinner.setAdapter(new ArrayAdapter<Course>(RegisterActivity.this,R.layout.simple_spinner_dropdown_item,Course));
                             progressDialog.dismiss();
                         }
                         catch (JSONException e){
@@ -188,7 +187,7 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
                                 Department.add(new Department(jsonObject1.getInt("Dept_id"),
                                         jsonObject1.getString("Dept_name")));
                             }
-                            Department_Spinner.setAdapter(new ArrayAdapter<Department>(Register_Activity.this,R.layout.simple_spinner_dropdown_item,Department));
+                            Department_Spinner.setAdapter(new ArrayAdapter<Department>(RegisterActivity.this,R.layout.simple_spinner_dropdown_item,Department));
                             progressDialog.dismiss();
                         }
                         catch (JSONException e){
@@ -307,7 +306,7 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
         RegisterUser();
     }
     else{
-        Intent in=new Intent(Register_Activity.this, Login_Activity.class);
+        Intent in=new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(in);
         finish();
     }

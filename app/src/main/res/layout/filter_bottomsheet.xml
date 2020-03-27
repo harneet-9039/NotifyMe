@@ -7,16 +7,34 @@
     android:layout_height="wrap_content"
     android:paddingBottom="8dp"
     >
-    <include layout="@layout/filter_applybutton_layout"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/includeapply"></include>
 
-    <include layout="@layout/filter_clearbutton_layout"
-        app:layout_constraintTop_toTopOf="parent"
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/clearbutton"
+        android:minHeight="40dp"
+        android:maxWidth="60dp"
+        android:maxLines="1"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:clickable="true"
+        android:paddingTop="5dp"
+        android:onClick="clearclick"
+        android:text="Clear"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/highpriority"
+        android:gravity="right"
+        android:paddingStart="6dip"
+        android:paddingEnd="4dip"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/includeclear"></include>
+        app:layout_constraintHorizontal_bias="0.94"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
 
 
     <TextView
@@ -30,7 +48,7 @@
         android:textSize="15dp"
         android:text="Your department notices"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/includeapply"></TextView>
+        app:layout_constraintTop_toBottomOf="@id/clearbutton"></TextView>
 
     <CheckBox
         android:id="@+id/deptfilter"
@@ -41,8 +59,8 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/dept"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.95"
-        app:layout_constraintStart_toEndOf="@id/text"
-        app:layout_constraintTop_toBottomOf="@id/includeapply"></CheckBox>
+        app:layout_constraintStart_toEndOf="@id/dept"
+        app:layout_constraintTop_toBottomOf="@id/clearbutton"></CheckBox>
 
 
     <TextView
@@ -66,7 +84,7 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/course"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.95"
-        app:layout_constraintStart_toEndOf="@id/text"
+        app:layout_constraintStart_toEndOf="@id/course"
         android:paddingTop="5dp"
         app:layout_constraintTop_toBottomOf="@id/deptfilter"></CheckBox>
 
@@ -94,7 +112,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingTop="5dp"
         app:layout_constraintHorizontal_bias="0.95"
-        app:layout_constraintStart_toEndOf="@id/text"
+        app:layout_constraintStart_toEndOf="@id/year"
         app:layout_constraintTop_toBottomOf="@id/coursefilter"></CheckBox>
 
 
