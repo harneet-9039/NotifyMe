@@ -2,11 +2,14 @@ package app.com.notifyme;
 
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 
 import com.android.volley.AuthFailureError;
@@ -39,6 +42,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import app.com.NotificationDrawable;
 import app.com.adapters.NoticeAdapter;
 import app.com.common.CheckConnection;
 import app.com.common.GlobalMethods;
@@ -149,7 +153,6 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(MenuItem menuItem) {
-                    menuItem.setChecked(true);
                     switch (menuItem.getItemId()) {
                         case R.id.nav_logout:
                             AlertDialog.Builder builder = new AlertDialog.Builder(NoticeDashboard.this);
@@ -176,12 +179,17 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                             final AlertDialog alertDialog = builder.create();
                             alertDialog.show();
                             return true;
-
+                        case R.id.nav_access:
+                            startActivity(new Intent(NoticeDashboard.this,RequestAccessActivity.class));
+                            return true;
+                        case R.id.nav_dash:
+                            startActivity(new Intent(NoticeDashboard.this,NoticeDashboard.class));
+                            return true;
                         default:return false;
                     }
                 }
                     });
-
+            navigationView.getMenu().getItem(0).setChecked(true);
 
             SearchView simpleSearchView = findViewById(R.id.searchView);
             UpdateSearchView(simpleSearchView);
@@ -307,12 +315,13 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                                 noticeModel.setDepartment(dataobj.getString("department"));
                                 noticeModel.setCourse(dataobj.getString("course"));
                                 noticeModel.setScope(dataobj.getString("scope"));
-                                String[] attachments = dataobj.getString("Attachments").split(",");
-                                for(String path : attachments){
-                                    attachmentList.add(path);
+                                if(!dataobj.getString("Attachments").equals("null")) {
+                                    String[] attachments = dataobj.getString("Attachments").split(",");
+                                    for (String path : attachments) {
+                                        attachmentList.add(path);
+                                    }
+                                    noticeModel.setAttachments(attachmentList);
                                 }
-                                noticeModel.setAttachments(attachmentList);
-
                                 String dateOfCreation = dataobj.getString("date_time");
                                 noticeModel.setTimestamp(dateOfCreation);
                                 noticeModelArrayList.add(noticeModel);
@@ -432,8 +441,14 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.notice_dashboard, menu);
+        MenuItem menuItem = menu.findItem(R.id.ic_group);
+        LayerDrawable icon = (LayerDrawable) menuItem.getIcon();
+        GlobalMethods.setCountForNotifcation(icon,"3",this);
         return true;
+
     }
+
+
 
    @Override
     public boolean onSupportNavigateUp() {
@@ -481,5 +496,6 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
         Collections.sort(tempNoticeArray,Notice.dateCompartor);
         noticeAdapter.swap(tempNoticeArray);
     }
+
 
 }

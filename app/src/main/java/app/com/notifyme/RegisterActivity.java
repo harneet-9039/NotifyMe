@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -47,6 +48,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private View v;
     private Button Register;
     private EditText Name, Reg_no, year, Email, Contact, password;
+    private TextView signinredirect;
 
 
     @Override
@@ -71,8 +73,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
          Contact = findViewById(R.id.contact);
          password = findViewById(R.id.password);
          Register = findViewById(R.id.RegisterUser);
-
+        signinredirect = findViewById(R.id.signin);
          Register.setOnClickListener(this);
+         signinredirect.setOnClickListener(this);
 
         Department = new ArrayList<>();
         Course = new ArrayList<>();
@@ -305,7 +308,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     {
         RegisterUser();
     }
-    else{
+    else if(view.getId()==R.id.signin){
         Intent in=new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(in);
         finish();

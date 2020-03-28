@@ -1,7 +1,14 @@
 package app.com.common;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
+
+import app.com.NotificationDrawable;
+import app.com.notifyme.R;
 
 public class GlobalMethods {
     static String URL = "https://app--notifyme.herokuapp.com/";
@@ -23,7 +30,24 @@ public class GlobalMethods {
         return URL;
     }
 
+    public static void setCountForNotifcation(LayerDrawable icon, String count) {
+    }
 
+    public static void setCountForNotifcation(LayerDrawable icon, String count, Context ctx){
+        NotificationDrawable badge;
+
+        // Reuse drawable if possible
+        Drawable reuse = icon.findDrawableByLayerId(R.id.ic_group_count);
+        if (reuse != null && reuse instanceof NotificationDrawable) {
+            badge = (NotificationDrawable) reuse;
+        } else {
+            badge = new NotificationDrawable(ctx);
+        }
+
+        badge.setCount(count);
+        icon.mutate();
+        icon.setDrawableByLayerId(R.id.ic_group_count, badge);
+    }
 
 
     }

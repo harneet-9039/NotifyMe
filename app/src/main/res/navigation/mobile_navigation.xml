@@ -7,35 +7,39 @@
 
      <fragment
          android:id="@+id/nav_dash"
-         android:name="app.com.notifyme.ui.home.HomeFragment"
+         android:name="app.com.notifyme.ui.HomeFragment"
          tools:layout="@layout/fragment_home" />
      <fragment
          android:id="@+id/nav_notice"
-         android:name="app.com.notifyme.ui.home.HomeFragment"
+         android:name="app.com.notifyme.ui.HomeFragment"
          tools:layout="@layout/fragment_home" />
 
      <fragment
          android:id="@+id/nav_profile"
-         android:name="app.com.notifyme.ui.gallery.GalleryFragment"
-         tools:layout="@layout/fragment_gallery" />
+         android:name="app.com.notifyme.ui.HomeFragment"
+         tools:layout="@layout/fragment_home" />
 
      <fragment
          android:id="@+id/nav_access"
-         android:name="app.com.notifyme.ui.slideshow.SlideshowFragment"
-         tools:layout="@layout/fragment_slideshow" />
+         android:name="app.com.notifyme.ui.HomeFragment"
+         tools:layout="@layout/fragment_home" />
 
      <fragment
+         android:id="@+id/nav_request_access"
+         android:name="app.com.notifyme.ui.HomeFragment"
+         tools:layout="@layout/fragment_home" />
+     <fragment
          android:id="@+id/nav_logout"
-         android:name="app.com.notifyme.ui.tools.ToolsFragment"
-         tools:layout="@layout/fragment_tools" />
+         android:name="app.com.notifyme.ui.HomeFragment"
+         tools:layout="@layout/fragment_home" />
 
      <fragment
          android:id="@+id/nav_share"
-         android:name="app.com.notifyme.ui.share.ShareFragment"
-         tools:layout="@layout/fragment_share" />
+         android:name="app.com.notifyme.ui.HomeFragment"
+         tools:layout="@layout/fragment_home" />
 
      <fragment
          android:id="@+id/nav_send"
-         android:name="app.com.notifyme.ui.send.SendFragment"
-         tools:layout="@layout/fragment_send" />
+         android:name="app.com.notifyme.ui.HomeFragment"
+         tools:layout="@layout/fragment_home" />
  </navigation>

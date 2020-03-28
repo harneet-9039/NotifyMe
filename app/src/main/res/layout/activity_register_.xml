@@ -174,7 +174,7 @@
                             android:layout_marginTop="@dimen/signup_text_margin_top">
                             <EditText
                                 style="@style/modifiedEditText"
-                                android:hint="@string/login_password_hint"
+                                android:hint="Confirm password"
                                 android:maxLines="1"
                                 android:id="@+id/c_password"
                                 android:inputType="textPassword"/>
@@ -193,6 +193,7 @@
                             android:id="@+id/signin"
                             android:textColor="@color/primaryTextColor"
                             android:text="@string/signup_login_hint"
+                            android:clickable="true"
                             android:layout_marginTop="@dimen/loginViewsMargin"/>
 
                     </LinearLayout>

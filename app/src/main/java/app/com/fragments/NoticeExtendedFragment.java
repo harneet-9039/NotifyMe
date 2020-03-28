@@ -25,6 +25,7 @@ import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
@@ -99,7 +100,6 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
         desc = view.findViewById(R.id.desc_extended);
         attachments = view.findViewById(R.id.attachments);
         attachmentList = view.findViewById(R.id.listattachment);
-        v=view;
         return view;
         }
 
@@ -112,6 +112,7 @@ public void onClick(View v) {
         NoticeExtendedFragment.this.dismiss();
         }
         });
+        v=view;
         title.setText(record.getTitle());
         name.setText(record.getName());
         if(record.getIsCoordinator().equals("0")||record.getIsCoordinator().equals("1")) {
@@ -119,7 +120,9 @@ public void onClick(View v) {
         }else{
             designation.setText(record.getIsCoordinator());
         }
-        course.setText("("+record.getCourse()+")");
+        if(!record.getCourse().equals("")) {
+            course.setText("(" + record.getCourse() + ")");
+        }
         contact.setText("Contact: +91-"+record.getContact());
         String updatedDate = record.getTimestamp().substring(0,record.getTimestamp().indexOf("T"));
         String[] parts = updatedDate.split("-");
@@ -172,9 +175,7 @@ public void onClick(View v) {
            }
            }
        }catch(Exception e){
-           Snackbar.make(v, "Exception Occured",
-                   Snackbar.LENGTH_LONG)
-                   .show();
+           Toast.makeText(ctx,"Exception in parsing attachment list",Toast.LENGTH_LONG);
        }
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ctx,R.layout.downloadbutton_layout, attachmentNameList);
         attachmentList.setAdapter(arrayAdapter);
