@@ -3,14 +3,8 @@ package app.com.notifyme;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-
-import androidx.appcompat.app.AppCompatActivity;
-import app.com.common.CheckConnection;
-import app.com.common.GlobalMethods;
-import app.com.common.Singleton;
-
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
@@ -19,7 +13,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +25,12 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import app.com.common.CheckConnection;
+import app.com.common.GlobalMethods;
+import app.com.common.Singleton;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -68,7 +72,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void getToken(){
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if(task.isSuccessful()){
+                            editor.putString("token",task.getResult().getToken());
+                            editor.commit();
 
+                        }
+                        else{
+                            progressDialog.dismiss();
+                            Snackbar.make(v, "token not saved",
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
+                        }
+                    }
+                });
+    }
 
     private void LoginUser()
     {
@@ -79,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 //JSONArray response = null;
-                Log.d("HAR",response.toString());
+                Log.d("HAR", response);
                 try {
                     JSONObject j = new JSONObject(response);
                     String data = (String) j.get("code");
@@ -89,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject dataobj = dataArray.getJSONObject(0);
 
 
-                     if(data.toString().equals("100")){
+                     if(data.equals("100")){
                         editor.putInt("isCoordinator",0);
                         editor.commit();
                         callSplash();
@@ -146,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     parameters.put("reg_id", pref.getString("fregistrationNumber",""));
                 }
                 parameters.put("password", pref.getString("password",""));
+                parameters.put("token", pref.getString("token",""));
                 return parameters;
             }
         };
@@ -164,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
                 else{
+
                     Intent homeintent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(homeintent);
                     finish();

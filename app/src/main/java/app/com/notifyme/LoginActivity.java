@@ -2,18 +2,14 @@ package app.com.notifyme;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.view.*;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -34,6 +30,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import app.com.common.GlobalMethods;
 import app.com.common.Singleton;
 
@@ -72,6 +70,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         LoginUser.setOnClickListener(this);
         Register_Link.setOnClickListener(this);
+        if(pref.getString("token","")=="") {
+            getToken();
+        }
     }
 
     private void LoginUser()
@@ -85,29 +86,29 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onResponse(String response) {
                 //JSONArray response = null;
                 JSONObject j;
-                Log.d("HAR",response.toString());
+                Log.d("HAR", response);
                 try {
                      j = new JSONObject(response);
                     String data = (String) j.get("code");
-                    if(data.toString().equals("345")){
+                    if(data.equals("345")){
                         progressDialog.dismiss();
                         Snackbar.make(v, "Internal Server Error",
                                 Snackbar.LENGTH_LONG)
                                 .show();
                     }
-                    else if(data.toString().equals("400")){
+                    else if(data.equals("400")){
                         progressDialog.dismiss();
                         Snackbar.make(v, "Username and password do not match",
                                 Snackbar.LENGTH_LONG)
                                 .show();
                     }
-                    else if(data.toString().equals("401")){
+                    else if(data.equals("401")){
                         progressDialog.dismiss();
                         Snackbar.make(v, "Register to continue login",
                                 Snackbar.LENGTH_LONG)
                                 .show();
                     }
-                    else if(data.toString().equals("402")){
+                    else if(data.equals("402")){
                         progressDialog.dismiss();
                         Snackbar.make(v, "Account not activated, please check your email",
                                 Snackbar.LENGTH_LONG)
@@ -116,7 +117,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
 
-                        else if(data.toString().equals("100")){
+                        else if(data.equals("100")){
                         JSONArray dataArray = j.getJSONArray("data");
                         JSONObject dataobj = dataArray.getJSONObject(0);
                             editor.putString("registrationNumber",dataobj.getString("Reg_id"));
@@ -130,15 +131,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             editor.putString("contact",dataobj.getString("contact"));
                             editor.putString("password",Password.getText().toString());
                             editor.putInt("isCoordinator",0);
-                        if(pref.getString("token","")=="") {
-                            getToken();
-                        }
-                        else {
                             editor.commit();
                             progressDialog.dismiss();
                             startActivity(homeintent);
                             finish();
-                        }
+
                         }
                         else if(data.equals("200")){
                         JSONArray dataArray = j.getJSONArray("data");
@@ -154,16 +151,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             editor.putString("contact",dataobj.getString("contact"));
                             editor.putString("password",Password.getText().toString());
                             editor.putInt("isCoordinator",1);
-
-                        if(pref.getString("token","")=="") {
-                            getToken();
-                        }
-                        else {
                             editor.commit();
                             progressDialog.dismiss();
                             startActivity(homeintent);
                             finish();
-                        }
+
                         }
                         else if(data.equals("300")){
                         JSONArray dataArray = j.getJSONArray("data");
@@ -194,15 +186,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             editor.putString("fcoursedeptName",courseDeptNameJSONString);
                             editor.putInt("isCoordinator",2);
 
-                        if(pref.getString("token","")=="") {
-                            getToken();
-                        }
-                        else {
                             editor.commit();
                             progressDialog.dismiss();
                             startActivity(homeintent);
                             finish();
-                        }
+
 
                         }
 
@@ -238,6 +226,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                // Log.d("HAR",String.valueOf(DepartmentID));
                 parameters.put("reg_id", UserName.getText().toString());
                 parameters.put("password", Password.getText().toString());
+                parameters.put("token", pref.getString("token",""));
                 return parameters;
             }
         };
@@ -246,7 +235,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getToken(){
-        final Intent homeintent=new Intent(LoginActivity.this,NoticeDashboard.class);
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
@@ -254,9 +242,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if(task.isSuccessful()){
                             editor.putString("token",task.getResult().getToken());
                             editor.commit();
-                            progressDialog.dismiss();
-                            startActivity(homeintent);
-                            finish();
 
                         }
                         else{

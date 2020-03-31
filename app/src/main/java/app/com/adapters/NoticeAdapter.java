@@ -16,7 +16,6 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,7 +114,10 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         holder.date.setText(stringBuilder);
         if(noticeModelArrayListFilter.get(position).getIsCoordinator().equals("0")||
                 noticeModelArrayListFilter.get(position).getIsCoordinator().equals("1")){
-            holder.desgination.setText("Student Coordinator");
+            if(!(noticeModelArrayListFilter.get(position).getEventName().equals(""))) {
+
+                holder.desgination.setText("Coordinator (" + noticeModelArrayListFilter.get(position).getEventName() + ")");
+            }
         }
         else{
             holder.desgination.setText(noticeModelArrayListFilter.get(position).getIsCoordinator());

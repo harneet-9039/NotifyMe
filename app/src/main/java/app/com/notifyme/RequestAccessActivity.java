@@ -1,19 +1,5 @@
 package app.com.notifyme;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import app.com.common.GlobalMethods;
-import app.com.common.Singleton;
-
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,7 +8,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -41,19 +26,33 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Random;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
+import app.com.common.GlobalMethods;
+import app.com.common.Singleton;
+import app.com.fragments.NotificationFragment;
+import app.com.models.NotificationModel;
 
 public class RequestAccessActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
@@ -71,7 +70,8 @@ public class RequestAccessActivity extends AppCompatActivity {
     private int countrows = 0;
     private ProgressDialog progressDialog;
     private DrawerLayout drawer;
-
+    private View v;
+    private LayerDrawable icon;
     private static final String TAG = "REQUEST_ACTIVITY";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +81,7 @@ public class RequestAccessActivity extends AppCompatActivity {
         imageviews = new ArrayList<>();
         inputfields = new ArrayList<>();
         buttons = new ArrayList<>();
+        v=findViewById(R.id.mainlayoutcons);
         inputfieldsinside = new ArrayList<>();
         ImageView firstView = findViewById(R.id.image1);
         imageviews.add(firstView);
@@ -114,17 +115,18 @@ public class RequestAccessActivity extends AppCompatActivity {
     private void OpenDialogForValidity() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         View mView = getLayoutInflater().inflate(R.layout.duration_layout, null);
-        alert.setTitle(R.string.validity);
         alert.setIcon(R.drawable.ic_access_time_black_24dp);
 
         final EditText dialog_editText = mView.findViewById(R.id.dialog_editText);
+        final EditText dialog_post = mView.findViewById(R.id.dialog_editpostText);
         alert.setView(mView);
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                SaveRequestNetworkCall(dialog_editText.getText().toString());
                 dialogInterface.cancel();
                 progressDialog.show();
+                SaveRequestNetworkCall(dialog_editText.getText().toString(), dialog_post.getText().toString());
+
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -138,8 +140,8 @@ public class RequestAccessActivity extends AppCompatActivity {
         d.show();
     }
 
-    private void SaveRequestNetworkCall(final String duration) {
-        String URL = GlobalMethods.getURL()+"make_requests";
+    private void SaveRequestNetworkCall(final String duration, final String post) {
+        String URL = GlobalMethods.getURL()+"make_request";
         Gson gson = new Gson();
         String[] array = new String[inputfieldsinside.size()];
         int tempvar = 0;
@@ -155,10 +157,27 @@ public class RequestAccessActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 //JSONArray response = null;
                 JSONObject j;
-                Log.d("HAR",response.toString());
+                Log.d("HAR", response);
                 try {
                     j = new JSONObject(response);
-                    String data = (String) j.get("code");
+                    int data = (int) j.get("code");
+                    if(data==400){
+                        progressDialog.dismiss();
+                        Snackbar snackbar;
+                        snackbar = Snackbar.make(v, "Request Submitted Successfully",
+                                Snackbar.LENGTH_LONG);
+                        View snackBarView = snackbar.getView();
+                        snackBarView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                        snackbar.show();
+                    }
+                    else{
+                        Snackbar snackbar;
+                        snackbar = Snackbar.make(v, "Request submission failed",
+                                Snackbar.LENGTH_LONG);
+                        View snackBarView = snackbar.getView();
+                        snackBarView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                        snackbar.show();
+                    }
                 }
 
                 catch (JSONException e){
@@ -171,6 +190,12 @@ public class RequestAccessActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("HAR",error.toString());
+                Snackbar snackbar;
+                snackbar = Snackbar.make(v, "Internal Server Error, Please try later",
+                        Snackbar.LENGTH_LONG);
+                View snackBarView = snackbar.getView();
+                snackBarView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                snackbar.show();
                 progressDialog.dismiss();
 
 
@@ -181,13 +206,36 @@ public class RequestAccessActivity extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> parameters = new HashMap<>();
                 // Log.d("HAR",String.valueOf(DepartmentID));
-                parameters.put("sender_id",pref.getString("fregistrationnumber",""));
+                parameters.put("sender_id",pref.getString("fregistrationNumber",""));
                 parameters.put("student_id", finalArray);
                 parameters.put("duration", duration);
+                parameters.put("post", post);
                 return parameters;
             }
         };
         Singleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
+
+    @Override
+    public void onRestart(){
+        super.onRestart();
+        String jsonText = pref.getString("notificationdata", null);
+        if(jsonText!=null) {
+            Gson record = new Gson();
+            Type type = new TypeToken<List<NotificationModel>>() {
+            }.getType();
+            List<NotificationModel> notificationList = record.fromJson(jsonText, type);
+
+            if (pref.getInt("notificationbuttonclick", 0) != 0) {
+                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size() - pref.getInt("notificationbuttonclick", 0)), this);
+            } else {
+                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size()), this);
+            }
+        }
+        else{
+            GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
+        }
+
     }
 
     private void addNewRow(int count){
@@ -243,7 +291,7 @@ public class RequestAccessActivity extends AppCompatActivity {
         hset.connect(plus.getId(),ConstraintSet.START,textInputLayout.getId(),ConstraintSet.END);
         hset.connect(plus.getId(),ConstraintSet.BOTTOM,parentLayout.getId(),ConstraintSet.BOTTOM);
         hset.connect(plus.getId(),ConstraintSet.END,parentLayout.getId(),ConstraintSet.END,((ConstraintLayout.LayoutParams)buttons.get(count).getLayoutParams()).getMarginEnd());
-        hset.connect(plus.getId(),ConstraintSet.TOP,textInputLayout.getId(),ConstraintSet.TOP, (int) (((ConstraintLayout.LayoutParams)buttons.get(count).getLayoutParams()).topMargin));
+        hset.connect(plus.getId(),ConstraintSet.TOP,textInputLayout.getId(),ConstraintSet.TOP, ((ConstraintLayout.LayoutParams)buttons.get(count).getLayoutParams()).topMargin);
 
         hset.applyTo(parentLayout);
         imageviews.add(image);
@@ -264,7 +312,7 @@ public class RequestAccessActivity extends AppCompatActivity {
     }
 
     private void CommonWorkOfMenuItems() {
-        
+
         Toolbar toolbar = findViewById(R.id.requesttoolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(Html.fromHtml("<small>Request Student Access</small>"));
@@ -287,7 +335,7 @@ public class RequestAccessActivity extends AppCompatActivity {
 
         if(pref.getString("fregistrationNumber","")==""){
             navbaryearcourse.setText(pref.getString("departmentname","")+", "+
-                    pref.getString("coursename","")+", "+String.valueOf(pref.getInt("year",0))+" year");
+                    pref.getString("coursename","")+", "+ pref.getInt("year", 0) +" year");
         }
         else{
             navbardesignation.setVisibility(View.VISIBLE);
@@ -318,7 +366,12 @@ public class RequestAccessActivity extends AppCompatActivity {
                                 SharedPreferences sharedPreferences = getSharedPreferences("UserVals",
                                         0);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.clear();
+                                Map<String,?> prefs = pref.getAll();
+                                for(Map.Entry<String,?> prefToReset : prefs.entrySet()){
+                                    if(!(prefToReset.getKey().equals("notificationdata"))) {
+                                        editor.remove(prefToReset.getKey()).commit();
+                                    }
+                                }
                                 editor.apply();
                                 finish();
                                 startActivity(new Intent(RequestAccessActivity.this, LoginActivity.class));
@@ -352,8 +405,41 @@ public class RequestAccessActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.notice_dashboard, menu);
         MenuItem menuItem = menu.findItem(R.id.ic_group);
-        LayerDrawable icon = (LayerDrawable) menuItem.getIcon();
-        GlobalMethods.setCountForNotifcation(icon,"3",this);
+         icon = (LayerDrawable) menuItem.getIcon();
+        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                NotificationFragment.display(getSupportFragmentManager(), getApplicationContext());
+                GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
+
+                String jsonText = pref.getString("notificationdata", null);
+                if(jsonText!=null) {
+                    Gson record = new Gson();
+                    Type type = new TypeToken<List<NotificationModel>>() {
+                    }.getType();
+                    List<NotificationModel> notificationList = record.fromJson(jsonText, type);
+                    editor.putInt("notificationbuttonclick", notificationList.size());
+                    editor.commit();
+                }
+                return true;
+            }
+        });
+
+        String jsonText = pref.getString("notificationdata", null);
+        if(jsonText!=null) {
+            Gson record = new Gson();
+            Type type = new TypeToken<List<NotificationModel>>() {
+            }.getType();
+            List<NotificationModel> notificationList = record.fromJson(jsonText, type);
+            if (pref.getInt("notificationbuttonclick", 0) != 0) {
+                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size() - pref.getInt("notificationbuttonclick", 0)), this);
+            } else {
+                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size()), this);
+            }
+        }
+        else{
+            GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
+        }
         return true;
 
     }

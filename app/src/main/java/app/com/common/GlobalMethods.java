@@ -3,8 +3,6 @@ package app.com.common;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import app.com.NotificationDrawable;
@@ -30,9 +28,6 @@ public class GlobalMethods {
         return URL;
     }
 
-    public static void setCountForNotifcation(LayerDrawable icon, String count) {
-    }
-
     public static void setCountForNotifcation(LayerDrawable icon, String count, Context ctx){
         NotificationDrawable badge;
 
@@ -48,6 +43,8 @@ public class GlobalMethods {
         icon.mutate();
         icon.setDrawableByLayerId(R.id.ic_group_count, badge);
     }
+
+
 
 
     }
