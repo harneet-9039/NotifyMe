@@ -3,6 +3,7 @@ package app.com.notifyme;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,9 +32,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import app.com.common.GlobalMethods;
 import app.com.common.Singleton;
+import app.com.common.startServiceUtility;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -82,6 +85,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         progressDialog.show();
 
         StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onResponse(String response) {
                 //JSONArray response = null;
@@ -118,6 +122,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
                         else if(data.equals("100")){
+
                         JSONArray dataArray = j.getJSONArray("data");
                         JSONObject dataobj = dataArray.getJSONObject(0);
                             editor.putString("registrationNumber",dataobj.getString("Reg_id"));
@@ -132,6 +137,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             editor.putString("password",Password.getText().toString());
                             editor.putInt("isCoordinator",0);
                             editor.commit();
+                        startServiceUtility.scheduleJob(LoginActivity.this);
                             progressDialog.dismiss();
                             startActivity(homeintent);
                             finish();
@@ -152,6 +158,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             editor.putString("password",Password.getText().toString());
                             editor.putInt("isCoordinator",1);
                             editor.commit();
+                        startServiceUtility.scheduleJob(LoginActivity.this);
                             progressDialog.dismiss();
                             startActivity(homeintent);
                             finish();
@@ -185,8 +192,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             String courseDeptNameJSONString = gson.toJson(courseDeptName);
                             editor.putString("fcoursedeptName",courseDeptNameJSONString);
                             editor.putInt("isCoordinator",2);
-
                             editor.commit();
+                            startServiceUtility.scheduleJob(LoginActivity.this);
                             progressDialog.dismiss();
                             startActivity(homeintent);
                             finish();

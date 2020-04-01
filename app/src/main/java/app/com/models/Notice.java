@@ -170,7 +170,7 @@ public class Notice {
             String dateSecond = s2.getTimestamp().toUpperCase();
 
             //ascending order
-            return dateOne.compareTo(dateSecond);
+            return dateSecond.compareTo(dateOne);
 
             //descending order
             //return StudentName2.compareTo(StudentName1);

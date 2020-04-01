@@ -3,6 +3,7 @@ package app.com.notifyme;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import app.com.common.CheckConnection;
 import app.com.common.GlobalMethods;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private View v;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
             progressDialog = new ProgressDialog(this);
             if (pref.getString("registrationNumber", "") != "") {
+
                 LoginUser();
             } else if (pref.getString("fregistrationNumber", "") != "") {
                 LoginUser();
@@ -169,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 parameters.put("password", pref.getString("password",""));
                 parameters.put("token", pref.getString("token",""));
+                parameters.put("flag", "0");
+
                 return parameters;
             }
         };

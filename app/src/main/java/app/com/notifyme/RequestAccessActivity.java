@@ -1,8 +1,11 @@
 package app.com.notifyme;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
@@ -28,15 +31,12 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import androidx.appcompat.app.AlertDialog;
@@ -45,6 +45,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -52,7 +53,6 @@ import androidx.navigation.ui.NavigationUI;
 import app.com.common.GlobalMethods;
 import app.com.common.Singleton;
 import app.com.fragments.NotificationFragment;
-import app.com.models.NotificationModel;
 
 public class RequestAccessActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
@@ -73,6 +73,20 @@ public class RequestAccessActivity extends AppCompatActivity {
     private View v;
     private LayerDrawable icon;
     private static final String TAG = "REQUEST_ACTIVITY";
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("HAR","aya");
+            Log.d("HAR",String.valueOf(pref.getInt("notificationStatusCount", -1)));
+            if (pref.getInt("notificationStatusCount", -1) != -1) {
+                GlobalMethods.setCountForNotifcation(icon, String.valueOf(pref.getInt("notificationStatusCount", -1)), RequestAccessActivity.this);
+            } else {
+                GlobalMethods.setCountForNotifcation(icon, "0", RequestAccessActivity.this);
+            }
+        }
+
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -216,27 +230,48 @@ public class RequestAccessActivity extends AppCompatActivity {
         Singleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+    }
+
     @Override
     public void onRestart(){
         super.onRestart();
-        String jsonText = pref.getString("notificationdata", null);
-        if(jsonText!=null) {
-            Gson record = new Gson();
-            Type type = new TypeToken<List<NotificationModel>>() {
-            }.getType();
-            List<NotificationModel> notificationList = record.fromJson(jsonText, type);
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+    }
 
-            if (pref.getInt("notificationbuttonclick", 0) != 0) {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size() - pref.getInt("notificationbuttonclick", 0)), this);
-            } else {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size()), this);
-            }
-        }
-        else{
-            GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
-        }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+
 
     }
+
 
     private void addNewRow(int count){
 
@@ -363,18 +398,8 @@ public class RequestAccessActivity extends AppCompatActivity {
                         builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                SharedPreferences sharedPreferences = getSharedPreferences("UserVals",
-                                        0);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                Map<String,?> prefs = pref.getAll();
-                                for(Map.Entry<String,?> prefToReset : prefs.entrySet()){
-                                    if(!(prefToReset.getKey().equals("notificationdata"))) {
-                                        editor.remove(prefToReset.getKey()).commit();
-                                    }
-                                }
-                                editor.apply();
+                                GlobalMethods.logout(RequestAccessActivity.this,v);
                                 finish();
-                                startActivity(new Intent(RequestAccessActivity.this, LoginActivity.class));
                                 dialogInterface.cancel();
                             }
                         });
@@ -409,38 +434,14 @@ public class RequestAccessActivity extends AppCompatActivity {
         menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                NotificationFragment.display(getSupportFragmentManager(), getApplicationContext());
+                NotificationFragment.display(getSupportFragmentManager(), RequestAccessActivity.this);
                 GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
-
-                String jsonText = pref.getString("notificationdata", null);
-                if(jsonText!=null) {
-                    Gson record = new Gson();
-                    Type type = new TypeToken<List<NotificationModel>>() {
-                    }.getType();
-                    List<NotificationModel> notificationList = record.fromJson(jsonText, type);
-                    editor.putInt("notificationbuttonclick", notificationList.size());
-                    editor.commit();
-                }
+                editor.putInt("notificationStatusCount",0);
                 return true;
             }
         });
-
-        String jsonText = pref.getString("notificationdata", null);
-        if(jsonText!=null) {
-            Gson record = new Gson();
-            Type type = new TypeToken<List<NotificationModel>>() {
-            }.getType();
-            List<NotificationModel> notificationList = record.fromJson(jsonText, type);
-            if (pref.getInt("notificationbuttonclick", 0) != 0) {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size() - pref.getInt("notificationbuttonclick", 0)), this);
-            } else {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size()), this);
-            }
-        }
-        else{
-            GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
-        }
-        return true;
+        GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
+                return true;
 
     }
 

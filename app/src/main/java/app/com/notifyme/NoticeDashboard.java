@@ -27,14 +27,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,7 +61,6 @@ import app.com.fragments.NoticeExtendedFragment;
 import app.com.fragments.NotificationFragment;
 import app.com.fragments.SortFragment;
 import app.com.models.Notice;
-import app.com.models.NotificationModel;
 
 public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.OnItemClickListener, SortFragment.ItemClickListener, FilterFragment.ItemClickListener {
 
@@ -88,23 +84,15 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String notificationListData = intent.getExtras().getString("list");
-            if(notificationListData!=null) {
-                Gson record = new Gson();
-                Type type = new TypeToken<List<NotificationModel>>() {
-                }.getType();
-                List<NotificationModel> notificationList = record.fromJson(notificationListData, type);
-
-                if (pref.getInt("notificationbuttonclick", 0) != 0) {
-                    GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size() - pref.getInt("notificationbuttonclick", 0)), NoticeDashboard.this);
+            Log.d("HAR","aya");
+                Log.d("HAR",String.valueOf(pref.getInt("notificationStatusCount", -1)));
+                if (pref.getInt("notificationStatusCount", -1) != -1) {
+                    GlobalMethods.setCountForNotifcation(icon, String.valueOf(pref.getInt("notificationStatusCount", -1)), NoticeDashboard.this);
                 } else {
-                    GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size()), NoticeDashboard.this);
+                    GlobalMethods.setCountForNotifcation(icon, "0", NoticeDashboard.this);
                 }
             }
-            else{
-                GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
-            }
-        }
+
     };
 
 
@@ -114,6 +102,7 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
         Menu nav_Menu = navigationView.getMenu();
         nav_Menu.findItem(R.id.nav_access).setVisible(false);
         nav_Menu.findItem(R.id.nav_request_status).setVisible(false);
+
     }
 
     private void PopulateData(){
@@ -191,6 +180,9 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             if(pref.getInt("isCoordinator",-1)!=2){
                 hideItem();
             }
+             if(pref.getInt("isCoordinator",-1)==0){
+                hideMore();
+            }
             navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -201,18 +193,8 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                             builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    SharedPreferences sharedPreferences = getSharedPreferences("UserVals",
-                                            0);
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    Map<String,?> prefs = pref.getAll();
-                                    for(Map.Entry<String,?> prefToReset : prefs.entrySet()){
-                                        if(!(prefToReset.getKey().equals("notificationdata"))) {
-                                            editor.remove(prefToReset.getKey()).commit();
-                                        }
-                                    }
-                                    editor.apply();
+                                    GlobalMethods.logout(NoticeDashboard.this,v);
                                     finish();
-                                    startActivity(new Intent(NoticeDashboard.this, LoginActivity.class));
                                     dialogInterface.cancel();
                                 }
                             });
@@ -286,6 +268,12 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
         }
 
 
+
+    }
+
+    private void hideMore() {
+        Menu nav_Menu = navigationView.getMenu();
+        nav_Menu.findItem(R.id.nav_notice).setVisible(false);
 
     }
 
@@ -476,36 +464,13 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             public boolean onMenuItemClick(MenuItem menuItem) {
                 NotificationFragment.display(getSupportFragmentManager(), NoticeDashboard.this);
                 GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
-
-                String jsonText = pref.getString("notificationdata", null);
-                if(jsonText!=null) {
-                    Gson record = new Gson();
-                    Type type = new TypeToken<List<NotificationModel>>() {
-                    }.getType();
-                    List<NotificationModel> notificationList = record.fromJson(jsonText, type);
-                    editor.putInt("notificationbuttonclick", notificationList.size());
-                    editor.commit();
-                }
+                editor.putInt("notificationStatusCount",0);
                 return true;
             }
         });
+        GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
 
-        String jsonText = pref.getString("notificationdata", null);
-        if(jsonText!=null) {
-            Gson record = new Gson();
-            Type type = new TypeToken<List<NotificationModel>>() {
-            }.getType();
-            List<NotificationModel> notificationList = record.fromJson(jsonText, type);
 
-            if (pref.getInt("notificationbuttonclick", 0) != 0) {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size() - pref.getInt("notificationbuttonclick", 0)), this);
-            } else {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size()), this);
-            }
-        }
-        else{
-            GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
-        }
         return true;
 
     }
@@ -513,6 +478,14 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
     @Override
     public void onStart(){
     super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
                 new IntentFilter("notification")
         );
@@ -527,45 +500,21 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
     @Override
     public void onRestart(){
         super.onRestart();
-        String jsonText = pref.getString("notificationdata", null);
-        if(jsonText!=null) {
-            Gson record = new Gson();
-            Type type = new TypeToken<List<NotificationModel>>() {
-            }.getType();
-            List<NotificationModel> notificationList = record.fromJson(jsonText, type);
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+    }
 
-            if (pref.getInt("notificationbuttonclick", 0) != 0) {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size() - pref.getInt("notificationbuttonclick", 0)), this);
-            } else {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size()), this);
-            }
-        }
-        else{
-            GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
-        }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+
 
     }
-   /* @Override
-    public void onResume(){
-        super.onResume();
-        String jsonText = pref.getString("notificationdata", null);
-        if(jsonText!=null) {
-            Gson record = new Gson();
-            Type type = new TypeToken<List<NotificationModel>>() {
-            }.getType();
-            List<NotificationModel> notificationList = record.fromJson(jsonText, type);
-
-            if (pref.getInt("notificationbuttonclick", 0) != 0) {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size() - pref.getInt("notificationbuttonclick", 0)), this);
-            } else {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(notificationList.size()), this);
-            }
-        }
-        else{
-            GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
-        }
-
-    }*/
    @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);

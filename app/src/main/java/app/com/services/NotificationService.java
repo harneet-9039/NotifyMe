@@ -4,51 +4,26 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
 
 import androidx.core.app.NotificationCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import app.com.models.NotificationModel;
 import app.com.notifyme.NoticeDashboard;
 import app.com.notifyme.R;
 
 public class NotificationService extends FirebaseMessagingService {
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
-    private static List<NotificationModel> list = new ArrayList<NotificationModel>();
-    private NotificationModel notificationModel;
-    private Gson gson = new Gson();
-    private LocalBroadcastManager broadcastManager;
-    @Override
-    public void onCreate() {
-        broadcastManager = LocalBroadcastManager.getInstance(this);
-    }
 
     @Override
     public void onNewToken(String s) {
         super.onNewToken(s);
-        pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
+       /* pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
         editor = pref.edit();
         editor.putString("token",s);
-        editor.commit();
+        editor.commit();*/
 
     }
 
@@ -56,7 +31,7 @@ public class NotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
+       /* pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
         editor = pref.edit();
         notificationModel = new NotificationModel();
         Date date = Calendar.getInstance().getTime();
@@ -85,9 +60,7 @@ public class NotificationService extends FirebaseMessagingService {
             record = gson.toJson(list);
             editor.putString("notificationdata",record);
             editor.apply();
-        }
-        Intent data = new Intent("notification");
-        data.putExtra("list",pref.getString("notificationdata", null));
+        }*/
 
         Intent intent = new Intent(this, NoticeDashboard.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -110,8 +83,7 @@ public class NotificationService extends FirebaseMessagingService {
             NotificationChannel channel = new NotificationChannel(channelId, "Default channel", NotificationManager.IMPORTANCE_DEFAULT);
             manager.createNotificationChannel(channel);
         }
-        manager.notify(random, builder.build());
-        broadcastManager.sendBroadcast(data);
+        manager.notify(0, builder.build());
     }
     }
 

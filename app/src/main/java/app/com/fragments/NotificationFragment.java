@@ -1,25 +1,39 @@
 package app.com.fragments;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import app.com.adapters.NotificationAdapter;
+import app.com.common.GlobalMethods;
+import app.com.common.Singleton;
 import app.com.models.NotificationModel;
 import app.com.notifyme.R;
 
@@ -31,13 +45,16 @@ public class NotificationFragment extends DialogFragment {
         private Toolbar toolbar;
         private AppBarLayout appBarLayout;
         private ListView listView;
+    private ProgressDialog pDialog;
 
         public static app.com.fragments.NotificationFragment display(FragmentManager fragmentManager, Context ctx) {
             app.com.fragments.NotificationFragment notificationDialog = new app.com.fragments.NotificationFragment();
             NotificationFragment.ctx = ctx;
             notificationDialog.show(fragmentManager, TAG);
+
             return notificationDialog;
         }
+
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -83,15 +100,67 @@ public class NotificationFragment extends DialogFragment {
 
             pref = ctx.getSharedPreferences("UserVals", 0); // 0 - for private mode
             editor = pref.edit();
-            Gson record = new Gson();
-            String jsonText = pref.getString("notificationdata", null);
-            if(jsonText!=null) {
-                Type type = new TypeToken<List<NotificationModel>>() {
-                }.getType();
-                List<NotificationModel> notificationList = record.fromJson(jsonText, type);
-                NotificationAdapter notificationAdapter = new NotificationAdapter(ctx, notificationList);
-                listView.setAdapter(notificationAdapter);
-            }
+            String URL_FINAL = GlobalMethods.getURL()+"updateNotification";
+            pDialog = new ProgressDialog(getContext());
+            pDialog.show();
+            pDialog.setMessage("Fetching your personalized notifications...");
+            StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, URL_FINAL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d("HAR",response);
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        int code = (int) jsonObject.get("code");
+                        if(code==200){
+                                Gson gson = new Gson();
+                                String jsonText = pref.getString("notificationlist", null);
+                                if(jsonText!=null) {
+                                    Type type = new TypeToken<List<NotificationModel>>() {
+                                    }.getType();
+                                    List<NotificationModel> notificationList = gson.fromJson(jsonText, type);
+                                    NotificationAdapter notificationAdapter = new NotificationAdapter(ctx, notificationList);
+                                    listView.setAdapter(notificationAdapter);
+                                    pDialog.dismiss();
+                                }
+
+                            }
+                        else{
+                            pDialog.dismiss();
+                        }
+                        }
+
+                     catch (JSONException e) {
+                        pDialog.dismiss();
+                        e.printStackTrace();
+                    }
+
+
+                }
+            }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    pDialog.dismiss();
+                    error.printStackTrace();
+                }
+            })
+            {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> parameters = new HashMap<>();
+                    if(pref.getString("registrationNumber","")!="") {
+                        parameters.put("studentID", pref.getString("registrationNumber", ""));
+                    }
+                    else{
+                        parameters.put("facultyID", pref.getString("fregistrationNumber", ""));
+                    }
+
+                    return parameters;
+                }
+            };
+            Singleton.getInstance(ctx).addToRequestQueue(jsonObjectRequest);
+
 
         }
 }

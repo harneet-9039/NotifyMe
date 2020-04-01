@@ -5,6 +5,7 @@ public class NotificationModel {
     private String title;
     private String desc;
     private String date;
+    private int status;
 
 
     public String getTitle() {
@@ -37,5 +38,13 @@ public class NotificationModel {
 
     public void setNotificationID(int notificationID) {
         this.notificationID = notificationID;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }
