@@ -1,7 +1,9 @@
 package app.com.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +14,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import app.com.models.Notice;
 import app.com.notifyme.R;
@@ -29,7 +35,8 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
     private ArrayList<Notice> noticeModelArrayList;
     private ArrayList<Notice> noticeModelArrayListFilter;
     private OnItemClickListener onItemClickListener;
-
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
     public void swap(List list){
         if (noticeModelArrayListFilter != null) {
             noticeModelArrayListFilter.clear();
@@ -48,6 +55,8 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         this.noticeModelArrayListFilter = new ArrayList<>();
         this.noticeModelArrayListFilter.addAll(noticeModelArrayList);
         this.onItemClickListener = onItemClickListener;
+        pref = ctx.getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
+        editor = pref.edit();
 
     }
 
@@ -64,24 +73,33 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         if(noticeModelArrayListFilter.get(position).getImages().equals("null")){
             Glide.with(c)
                     .load(R.drawable.banner)
+                    .apply(new RequestOptions()
+                            .fitCenter()
+                            .format(DecodeFormat.PREFER_ARGB_8888)
+                            .override(Target.SIZE_ORIGINAL))
                     .into(holder.bannerImage);
         }
         else {
             Glide.with(c)
                     .load(noticeModelArrayListFilter.get(position).getImages())
-                    .listener(new RequestListener<String, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            holder.bannerImage.setImageResource(R.drawable.banner);
-                            return false;
-                        }
+                    .apply(new RequestOptions()
+                            .fitCenter()
+                            .format(DecodeFormat.PREFER_ARGB_8888)
+                            .override(Target.SIZE_ORIGINAL))
+                            .listener(new RequestListener<Drawable>() {
+                                @Override
+                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
 
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            Log.d("HAR", "loaded");
-                            return false;
-                        }
-                    })
+                                    holder.bannerImage.setImageResource(R.drawable.banner);
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                    Log.d("HAR", "loaded");
+                                    return false;
+                                }
+                            })
                     .into(holder.bannerImage);
         }
 
@@ -121,6 +139,23 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         }
         else{
             holder.desgination.setText(noticeModelArrayListFilter.get(position).getIsCoordinator());
+        }
+
+        if(pref.getString("seennotices","")!=""){
+
+          /*  holder.title.setTextColor(Color.DKGRAY);
+            holder.title.setTypeface(null, Typeface.NORMAL);
+            holder.desc.setTextColor(Color.DKGRAY);
+            holder.desc.setTypeface(null, Typeface.NORMAL);
+            holder.priority.setTextColor(Color.DKGRAY);
+            holder.priority.setTypeface(null, Typeface.NORMAL);
+            holder.name.setTextColor(Color.DKGRAY);
+            holder.name.setTypeface(null, Typeface.NORMAL);
+            holder.desgination.setTextColor(Color.DKGRAY);
+            holder.desgination.setTypeface(null, Typeface.NORMAL);
+            holder.date.setTextColor(Color.DKGRAY);
+            holder.date.setTypeface(null, Typeface.NORMAL);
+            */
         }
     }
 

@@ -1,11 +1,5 @@
 package app.com.notifyme;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -65,6 +59,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import app.com.common.GlobalMethods;
 import app.com.common.Singleton;
 import app.com.models.Course;
@@ -110,6 +108,60 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private UploadServiceBroadcastReceiver broadcastReceiver = new UploadServiceBroadcastReceiver() {
+        @Override
+        public void onProgress(Context context, UploadInfo uploadInfo) {
+            // your implementation
+        }
+
+        @Override
+        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+            progressDialog.dismiss();
+            Snackbar.make(v, "Error uploading files to server",
+                    Snackbar.LENGTH_LONG)
+                    .show();
+        }
+
+        @Override
+        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
+
+            if(serverResponse.getHttpCode()==200){
+                File[] childfile = bannerDirectory.listFiles();
+                if(childfile.length>0) {
+                    childfile[0].delete();
+                    image_count--;
+                    Update_Images();
+                }
+
+                File[] childfileAtt = attachmentDirectory.listFiles();
+                if(childfileAtt.length>0) {
+                    for (File file2 : childfileAtt) {
+                        file2.delete();
+                        attachment_count--;
+                    }
+                    Update_Attachments();
+                }
+                progressDialog.dismiss();
+                Snackbar.make(v, "Notice Created successfully",
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            }
+            else{
+                Snackbar.make(v, "Notice upload failed, please try again",
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            }
+        }
+
+        @Override
+        public void onCancelled(Context context, UploadInfo uploadInfo) {
+            progressDialog.dismiss();
+            Snackbar.make(v, "Error uploading files to server",
+                    Snackbar.LENGTH_LONG)
+                    .show();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,7 +186,7 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
 
         if(pref.getString("fregistrationNumber","")==""){
             yearCourse.setText(pref.getString("departmentname","")+", "+
-                    pref.getString("coursename","")+", "+String.valueOf(pref.getInt("year",0))+" year");
+                    pref.getString("coursename","")+", "+ pref.getInt("year", 0) +" year");
         }
         else{
             yearCourse.setText(pref.getString("fdepartmentname","")+" department");
@@ -267,19 +319,6 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void UpdateDocumentVariable() {
-        File childfile[] = attachmentDirectory.listFiles();
-        File childFile[] = bannerDirectory.listFiles();
-        for (File file2 : childfile) {
-            attachment_count++;
-        }
-        for(File file: childFile)
-        {
-            image_count++;
-        }
-
-    }
-
     private void Initialize() {
 
         if(set_scope==0) {
@@ -323,55 +362,17 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
             });
         }
 
-
-    private void FillCourses(final int DepartmentID)
-    {
-        Course.add(new Course(0, "Course"));
-        final String URL = GlobalMethods.getURL()+"course";
-        progressDialog.show();
-
-        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //JSONArray response = null;
-                Log.d("HAR",response.toString());
-                try {
-                    JSONObject j = new JSONObject(response);
-                    JSONArray data = j.getJSONArray("data");
-                    for(int i=0;i<data.length();i++)
-                    {
-                        JSONObject jsonObject1 = data.getJSONObject(i);
-                        Course.add(new Course(jsonObject1.getInt("Course_id"),
-                                jsonObject1.getString("Course_branch")));
-                    }
-                    Course_Spinner.setAdapter(new ArrayAdapter<Course>(createNotice.this,R.layout.simple_spinner_dropdown_item,Course));
-                    progressDialog.dismiss();
-                }
-                catch (JSONException e){
-
-                }
-                progressDialog.dismiss();
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("HAR",error.toString());
-                progressDialog.dismiss();
-
-
-            }
-        })
+    private void UpdateDocumentVariable() {
+        File[] childfile = attachmentDirectory.listFiles();
+        File[] childFile = bannerDirectory.listFiles();
+        for (File file2 : childfile) {
+            attachment_count++;
+        }
+        for(File file: childFile)
         {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parameters = new HashMap<>();
-                Log.d("HAR",String.valueOf(DepartmentID));
-                parameters.put("dept_id", String.valueOf(DepartmentID));
-                return parameters;
-            }
-        };
-        Singleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+            image_count++;
+        }
+
     }
 
     private void FillDepartment() {
@@ -433,8 +434,76 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void FillCourses(final int DepartmentID)
+    {
+        Course.add(new Course(0, "Course"));
+        final String URL = GlobalMethods.getURL()+"course";
+        progressDialog.show();
+
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //JSONArray response = null;
+                Log.d("HAR", response);
+                try {
+                    JSONObject j = new JSONObject(response);
+                    JSONArray data = j.getJSONArray("data");
+                    for(int i=0;i<data.length();i++)
+                    {
+                        JSONObject jsonObject1 = data.getJSONObject(i);
+                        Course.add(new Course(jsonObject1.getInt("Course_id"),
+                                jsonObject1.getString("Course_branch")));
+                    }
+                    Course_Spinner.setAdapter(new ArrayAdapter<Course>(createNotice.this,R.layout.simple_spinner_dropdown_item,Course));
+                    progressDialog.dismiss();
+                }
+                catch (JSONException e){
+
+                }
+                progressDialog.dismiss();
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("HAR",error.toString());
+                progressDialog.dismiss();
+
+
+            }
+        })
+        {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> parameters = new HashMap<>();
+                Log.d("HAR",String.valueOf(DepartmentID));
+                parameters.put("dept_id", String.valueOf(DepartmentID));
+                return parameters;
+            }
+        };
+        Singleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
+
+
+    public boolean hasCamera()
+    {
+        return getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+    }
+
+    public void  att_camera(View view)
+    {
+        if(view.getId()==R.id.textView7 || view.getId()==R.id.imageView2){
+        flag = 1;}
+        else{
+            flag=2;
+        }
+        Intent i2=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(i2,REQUEST_IMAGE_CAPTURE);
+
+    }
+
     private String saveToInternalStorage(Bitmap bitmapImage, String imageName, String fileName, String filePath) throws IOException {
-        File childfile[] = bannerDirectory.listFiles();
+        File[] childfile = bannerDirectory.listFiles();
         if(childfile.length>1){
             Snackbar.make(v, "You cannot upload more than one banner image!",
                     Snackbar.LENGTH_LONG)
@@ -442,7 +511,7 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
             return null;
         }
 
-        File childfileAtt[] = attachmentDirectory.listFiles();
+        File[] childfileAtt = attachmentDirectory.listFiles();
         if(childfileAtt.length>3){
             Snackbar.make(v, "You cannot upload more than 3 attachments!",
                     Snackbar.LENGTH_LONG)
@@ -532,21 +601,10 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public boolean hasCamera()
-    {
-        return getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
-    }
-
-    public void  att_camera(View view)
-    {
-        if(view.getId()==R.id.textView7 || view.getId()==R.id.imageView2){
-        flag = 1;}
-        else{
-            flag=2;
-        }
-        Intent i2=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(i2,REQUEST_IMAGE_CAPTURE);
-
+    public void arrow_click(View view) {
+        Intent i1=new Intent(this,NoticeDashboard.class);
+        startActivity(i1);
+        finish();
     }
 
     @Override
@@ -592,9 +650,9 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
                 final AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 View mView = getLayoutInflater().inflate(R.layout.my_custom_dialog, null);
 
-                final EditText dialog_editText = (EditText) mView.findViewById(R.id.dialog_editText);
-                Button dialog_cancel = (Button) mView.findViewById(R.id.dialog_cancel);
-                Button dialog_save = (Button) mView.findViewById(R.id.dialog_save);
+                final EditText dialog_editText = mView.findViewById(R.id.dialog_editText);
+                Button dialog_cancel = mView.findViewById(R.id.dialog_cancel);
+                Button dialog_save = mView.findViewById(R.id.dialog_save);
 
                 alert.setView(mView);
 
@@ -613,7 +671,7 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
                     public void onClick(View view) {
                         Random r = new Random();
                         int n = (100000 + r.nextInt(900000));
-                        final String fileName = dialog_editText.getText().toString() + "-" + String.valueOf(n) + ".png";
+                        final String fileName = dialog_editText.getText().toString() + "-" + n + ".png";
                         try { saveToInternalStorage(photo, fileName, "","");
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -628,13 +686,6 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-
-    public void arrow_click(View view) {
-        Intent i1=new Intent(this,NoticeDashboard.class);
-        startActivity(i1);
-        finish();
-    }
-
     public void counter_attachment(View view){
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(createNotice.this);
@@ -642,10 +693,10 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
         builderSingle.setTitle("List of Attachments");
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(createNotice.this,R.layout.closebutton_layout);
-        File childfile[] = attachmentDirectory.listFiles();
+        File[] childfile = attachmentDirectory.listFiles();
         for (File file2 : childfile) {
             arrayAdapter.add(file2.getName());
-            Log.d("HAR", file2.getName().toString());
+            Log.d("HAR", file2.getName());
         }
 
 
@@ -672,64 +723,6 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
                             attachment_count--;
                             Update_Attachments();
                             Snackbar.make(v, "File deleted successfully",
-                                    Snackbar.LENGTH_LONG)
-                                    .show();
-                        }
-                        else{
-                            Snackbar.make(v, "There was an error deleting file",
-                                    Snackbar.LENGTH_LONG)
-                                    .show();
-                        }
-                    }
-                });
-                builderInner.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog,int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
-            }
-        });
-        builderSingle.show();
-    }
-
-    public void counter_image(View view){
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(createNotice.this);
-        builderSingle.setIcon(R.drawable.add_file);
-        builderSingle.setTitle("List of Banner Image");
-
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(createNotice.this,R.layout.closebutton_layout);
-        File childfile[] = bannerDirectory.listFiles();
-        for (File file2 : childfile) {
-            arrayAdapter.add(file2.getName());
-            Log.d("HAR", file2.getName().toString());
-        }
-
-
-        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                final String strName = arrayAdapter.getItem(which);
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(createNotice.this);
-                builderInner.setMessage("File name: "+strName + " will be deleted.");
-                builderInner.setTitle("Are you sure to delete this file?");
-                builderInner.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog,int which) {
-                        String fileName = strName;
-                        File path = new File(bannerDirectory, fileName);
-                        if(path.delete()){
-                            image_count--;
-                            Update_Images();
-                            Snackbar.make(v, "Image deleted successfully",
                                     Snackbar.LENGTH_LONG)
                                     .show();
                         }
@@ -843,66 +836,79 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
         return encodedImage;
     }
 
-    private UploadServiceBroadcastReceiver broadcastReceiver = new UploadServiceBroadcastReceiver() {
-        @Override
-        public void onProgress(Context context, UploadInfo uploadInfo) {
-            // your implementation
+    public void counter_image(View view){
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(createNotice.this);
+        builderSingle.setIcon(R.drawable.add_file);
+        builderSingle.setTitle("List of Banner Image");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(createNotice.this,R.layout.closebutton_layout);
+        File[] childfile = bannerDirectory.listFiles();
+        for (File file2 : childfile) {
+            arrayAdapter.add(file2.getName());
+            Log.d("HAR", file2.getName());
         }
 
-        @Override
-        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
-            progressDialog.dismiss();
-            Snackbar.make(v, "Error uploading files to server",
-                    Snackbar.LENGTH_LONG)
-                    .show();
-        }
 
-        @Override
-        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
-
-            if(serverResponse.getHttpCode()==200){
-                File childfile[] = bannerDirectory.listFiles();
-                childfile[0].delete();
-                image_count--;
-                Update_Images();
-                File childfileAtt[] = attachmentDirectory.listFiles();
-                for (File file2 : childfileAtt) {
-                    file2.delete();
-                    attachment_count--;
-                }
-                Update_Attachments();
-                progressDialog.dismiss();
-                Snackbar.make(v, "Notice Created successfully",
-                        Snackbar.LENGTH_LONG)
-                        .show();
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
             }
-            else{
-                Snackbar.make(v, "Notice upload failed, please try again",
-                        Snackbar.LENGTH_LONG)
-                        .show();
-            }
-        }
+        });
 
-        @Override
-        public void onCancelled(Context context, UploadInfo uploadInfo) {
-            progressDialog.dismiss();
-            Snackbar.make(v, "Error uploading files to server",
-                    Snackbar.LENGTH_LONG)
-                    .show();
-        }
-    };
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final String strName = arrayAdapter.getItem(which);
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(createNotice.this);
+                builderInner.setMessage("File name: "+strName + " will be deleted.");
+                builderInner.setTitle("Are you sure to delete this file?");
+                builderInner.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog,int which) {
+                        String fileName = strName;
+                        File path = new File(bannerDirectory, fileName);
+                        if(path.delete()){
+                            image_count--;
+                            Update_Images();
+                            Snackbar.make(v, "Image deleted successfully",
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
+                        }
+                        else{
+                            Snackbar.make(v, "There was an error deleting file",
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
+                        }
+                    }
+                });
+                builderInner.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog,int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderInner.show();
+            }
+        });
+        builderSingle.show();
+    }
 
     private void PostNoticeToServer() throws IOException {
         progressDialog.show();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        Date now = (Date) Calendar.getInstance().getTime();
+        Date now = Calendar.getInstance().getTime();
         MultipartUploadRequest multipartUploadRequest = new MultipartUploadRequest(this,GlobalMethods.getURL()+"create");
         multipartUploadRequest.setMethod("POST");
-        File childfile[] = bannerDirectory.listFiles();
-        multipartUploadRequest.addFileToUpload(childfile[0].getPath(),"banner");
-        File childfileAtt[] = attachmentDirectory.listFiles();
-        for (File file2 : childfileAtt) {
-            multipartUploadRequest.addFileToUpload(file2.getPath(),"attachment");
+        File[] childfile = bannerDirectory.listFiles();
+        if(childfile.length>0) {
+            multipartUploadRequest.addFileToUpload(childfile[0].getPath(), "banner");
+        }
+        File[] childfileAtt = attachmentDirectory.listFiles();
+        if(childfileAtt.length>0) {
+            for (File file2 : childfileAtt) {
+                multipartUploadRequest.addFileToUpload(file2.getPath(), "attachment");
+            }
         }
         if(pref.getString("registrationNumber","")!=""){
             multipartUploadRequest.addParameter("studentID",pref.getString("registrationNumber",""));

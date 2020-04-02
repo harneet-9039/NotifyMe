@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="app.com.notifyme">
 
-
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -18,12 +16,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".RequestStatus"></activity>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notifications_none_black_24dp" />
-        <activity android:name=".RequestAccessActivity">
 
-        </activity>
+        <activity android:name=".RequestAccessActivity"></activity>
 
         <service
             android:name="app.com.services.NotificationService"
@@ -36,10 +35,9 @@
         <service
             android:name="app.com.services.TestJobService"
             android:label="Word service"
-            android:permission="android.permission.BIND_JOB_SERVICE" >
+            android:permission="android.permission.BIND_JOB_SERVICE"></service>
 
-        </service>
-        <receiver android:name="app.com.notifyme.NoticeDashboard">
+        <receiver android:name=".NoticeDashboard">
             <intent-filter>
                 <action android:name="notification" />
             </intent-filter>

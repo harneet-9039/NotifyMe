@@ -25,7 +25,7 @@
          tools:layout="@layout/fragment_home" />
 
      <fragment
-         android:id="@+id/nav_request_access"
+         android:id="@+id/nav_request_status"
          android:name="app.com.notifyme.ui.HomeFragment"
          tools:layout="@layout/fragment_home" />
      <fragment

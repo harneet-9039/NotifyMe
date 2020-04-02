@@ -119,6 +119,9 @@ public void onClick(View v) {
         if(!record.getCourse().equals("")) {
             course.setText("(" + record.getCourse() + ")");
         }
+        else{
+            course.setText("("+record.getDepartment()+")");
+        }
         contact.setText("Contact: +91-"+record.getContact());
         String updatedDate = record.getTimestamp().substring(0,record.getTimestamp().indexOf("T"));
         String[] parts = updatedDate.split("-");

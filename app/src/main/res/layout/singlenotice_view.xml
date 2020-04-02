@@ -17,12 +17,16 @@
         android:layout_height="wrap_content">
 
 
-        <ImageView
+        <com.vatsal.imagezoomer.ImageZoomButton
             android:id="@+id/bannerimg"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
             android:layout_marginStart="8dp"
+            android:scaleType="fitCenter"
             android:layout_marginTop="24dp"
+            app:duration="200"
             android:maxWidth="50dp"
             app:srcCompat="@drawable/banner"
             card_view:layout_constraintBottom_toTopOf="@id/name"

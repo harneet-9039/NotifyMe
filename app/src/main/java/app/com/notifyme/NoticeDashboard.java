@@ -13,7 +13,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,11 +75,9 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
     private ArrayList<Notice> noticeModelArrayList, filteredArrayList;
     private TextView writeheretext, navbarusername, navbaryearcourse, navbardesignation;
     private NavigationView navigationView;
-    private LayoutInflater inflater;
-    private View filterView, applyFilterView;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
-    private ArrayList<Notice> tempFilterList = new ArrayList<>();
+    private ArrayList<String>idOpened;
     private LayerDrawable icon;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -157,12 +155,12 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             if(pref.getInt("isCoordinator",-1)==0){
                 TextView notice = findViewById(R.id.writeheretext);
                 SearchView view = findViewById(R.id.searchView);
-                RecyclerView scrollView = findViewById(R.id.recyclerView);
+                SwipeRefreshLayout scrollView = findViewById(R.id.swiperefresh_items);
                 ConstraintLayout constraintLayout = findViewById(R.id.inner);
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.clone(constraintLayout);
                 constraintSet.connect(view.getId(),ConstraintSet.TOP,constraintLayout.getId(),ConstraintSet.TOP,224);
-                constraintSet.connect(scrollView.getId(),ConstraintSet.TOP,constraintLayout.getId(),ConstraintSet.BOTTOM,374);
+                constraintSet.connect(scrollView.getId(),ConstraintSet.TOP,constraintLayout.getId(),ConstraintSet.BOTTOM,360);
                 constraintSet.applyTo(constraintLayout);
                 notice.setVisibility(View.GONE);
             }
@@ -170,7 +168,7 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             // menu should be considered as top level destinations.
             mAppBarConfiguration = new AppBarConfiguration.Builder(
                    R.id.nav_dash, R.id.nav_notice, R.id.nav_profile, R.id.nav_access,
-                    R.id.nav_logout, R.id.nav_share, R.id.nav_send)
+                    R.id.nav_logout)
                     .setDrawerLayout(drawer)
                     .build();
             NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -209,6 +207,9 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                             return true;
                         case R.id.nav_access:
                             startActivity(new Intent(NoticeDashboard.this,RequestAccessActivity.class));
+                            return true;
+                        case R.id.nav_request_status:
+                            startActivity(new Intent(NoticeDashboard.this,RequestStatus.class));
                             return true;
                         case R.id.nav_dash:
                             startActivity(new Intent(NoticeDashboard.this,NoticeDashboard.class));
@@ -360,6 +361,7 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                                 Notice noticeModel = new Notice();
                                 ArrayList<String> attachmentList = new ArrayList<>();
                                 JSONObject dataobj = dataArray.getJSONObject(i);
+                                noticeModel.setId(dataobj.getString("Notice_id"));
                                 noticeModel.setName("Posted by: " + dataobj.getString("name"));
                                 noticeModel.setEmailID(dataobj.getString("email_id"));
                                 noticeModel.setContact(dataobj.getString("contact"));
@@ -544,6 +546,13 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
         designation.setTypeface(null, Typeface.NORMAL);
         date.setTextColor(Color.DKGRAY);
         date.setTypeface(null, Typeface.NORMAL);
+        idOpened = new ArrayList<>();
+        idOpened.add(rowRecord.getId());
+        Gson gson = new Gson();
+        String records = gson.toJson(idOpened);
+        pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
+        editor = pref.edit();
+        editor.putString("seennotices",records);
     }
 
     @Override

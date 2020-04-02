@@ -380,7 +380,7 @@ public class RequestAccessActivity extends AppCompatActivity {
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_dash, R.id.nav_notice, R.id.nav_profile, R.id.nav_access,
-                R.id.nav_logout, R.id.nav_share, R.id.nav_send)
+                R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host);
@@ -414,6 +414,9 @@ public class RequestAccessActivity extends AppCompatActivity {
                         return true;
                     case R.id.nav_access:
                         startActivity(new Intent(RequestAccessActivity.this,RequestAccessActivity.class));
+                        return true;
+                    case R.id.nav_request_status:
+                        startActivity(new Intent(RequestAccessActivity.this,RequestStatus.class));
                         return true;
                     case R.id.nav_dash:
                         startActivity(new Intent(RequestAccessActivity.this,NoticeDashboard.class));
