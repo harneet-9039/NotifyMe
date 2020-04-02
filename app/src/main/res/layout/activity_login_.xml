@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     style="@style/loginParent"
-    tools:context="app.com.notifyme.Login_Activity">
+    android:id="@+id/main"
+    tools:context="app.com.notifyme.LoginActivity">
     <ScrollView
         style="@style/parent">
 

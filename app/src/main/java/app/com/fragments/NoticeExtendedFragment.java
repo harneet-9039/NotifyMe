@@ -1,6 +1,5 @@
 package app.com.fragments;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DownloadManager;
@@ -13,18 +12,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
@@ -72,7 +69,7 @@ public void onCreate(Bundle savedInstanceState) {
         }
 
 @Override
-public void onStart() {
+public void onStart() throws NullPointerException {
         super.onStart();
         Dialog dialog = getDialog();
         if (dialog != null) {
@@ -99,7 +96,6 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
         desc = view.findViewById(R.id.desc_extended);
         attachments = view.findViewById(R.id.attachments);
         attachmentList = view.findViewById(R.id.listattachment);
-        v=view;
         return view;
         }
 
@@ -112,16 +108,26 @@ public void onClick(View v) {
         NoticeExtendedFragment.this.dismiss();
         }
         });
+        v=view;
         title.setText(record.getTitle());
         name.setText(record.getName());
         if(record.getIsCoordinator().equals("0")||record.getIsCoordinator().equals("1")) {
-            designation.setText("Student Coordinator");
+            designation.setText("Coordinator ("+record.getEventName()+")");
         }else{
             designation.setText(record.getIsCoordinator());
         }
-        course.setText("("+record.getCourse()+")");
+        if(!record.getCourse().equals("")) {
+            course.setText("(" + record.getCourse() + ")");
+        }
+        else{
+            course.setText("("+record.getDepartment()+")");
+        }
         contact.setText("Contact: +91-"+record.getContact());
-        date.setText(record.getTimestamp());
+        String updatedDate = record.getTimestamp().substring(0,record.getTimestamp().indexOf("T"));
+        String[] parts = updatedDate.split("-");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(parts[2]+"-"+parts[1]+"-"+parts[0]);
+        date.setText(stringBuilder);
         desc.setText(record.getDescription());
     if(record.getImages().equals("null")){
         Glide.with(ctx)
@@ -158,16 +164,17 @@ public void onClick(View v) {
        attachmentPathList = new ArrayList<>();
        attachmentNameList = new ArrayList<>();
        try {
+           if(!(attachmentListContainer.size()<1))
+           {
            for (String record : attachmentListContainer) {
                attachmentPathList.add(record);
                String tempName = record.substring(record.lastIndexOf("/") + 1);
                String nameLong = tempName.substring(0, tempName.lastIndexOf("."));
                attachmentNameList.add(nameLong.substring(nameLong.lastIndexOf("-") + 1));
            }
+           }
        }catch(Exception e){
-           Snackbar.make(view, "Exception Occured",
-                   Snackbar.LENGTH_LONG)
-                   .show();
+           Toast.makeText(ctx,"Exception in parsing attachment list",Toast.LENGTH_LONG);
        }
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ctx,R.layout.downloadbutton_layout, attachmentNameList);
         attachmentList.setAdapter(arrayAdapter);
@@ -195,11 +202,7 @@ public void onClick(View v) {
 
 private boolean CheckPermission(){
     int result = ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    if (result == PackageManager.PERMISSION_GRANTED) {
-        return true;
-    } else {
-        return false;
-    }
+    return result == PackageManager.PERMISSION_GRANTED;
 }
 
     private void RequestPermission() {
@@ -228,7 +231,7 @@ private boolean CheckPermission(){
                             })
                             .show();
                 }
-                return;
+
             }
 
             // other 'case' lines to check for other
@@ -237,7 +240,7 @@ private boolean CheckPermission(){
     }
 
 private void DownloadSource(int i){
-    DownloadManager downloadManager = (DownloadManager) ((Activity) ctx).getSystemService(Context.DOWNLOAD_SERVICE);
+    DownloadManager downloadManager = (DownloadManager) ( ctx).getSystemService(Context.DOWNLOAD_SERVICE);
     DownloadManager.Request request = new DownloadManager.Request(Uri.parse(attachmentPathList.get(i)));
     request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
             .setAllowedOverRoaming(false)

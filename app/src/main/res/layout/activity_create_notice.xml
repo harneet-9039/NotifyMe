@@ -23,11 +23,15 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/post_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Post"
+        android:text="POST"
+
+        android:textStyle="bold"
+        android:clickable="false"
         android:textSize="18sp"
+        android:textColor="@color/grey"
         app:layout_constraintBottom_toTopOf="@+id/cardView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.813"
@@ -43,7 +47,7 @@
         android:textColor="#000000"
         android:textSize="18sp"
         android:textStyle="normal"
-        app:layout_constraintBaseline_toBaselineOf="@+id/textView"
+        app:layout_constraintBaseline_toBaselineOf="@+id/post_view"
         app:layout_constraintEnd_toEndOf="@+id/textView"
         app:layout_constraintHorizontal_bias="0.057"
         app:layout_constraintStart_toEndOf="@+id/appCompatImageView" />
@@ -298,6 +302,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/noticetext"
                     android:background="#00000000"
                     android:elevation="0dp"
                     android:gravity="top|left"

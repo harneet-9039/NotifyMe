@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     style="@style/loginParent"
-    tools:context="app.com.notifyme.Register_Activity">
+    android:id="@+id/main"
+    tools:context="app.com.notifyme.RegisterActivity">
     <ScrollView
         style="@style/parent">
 
@@ -49,8 +50,6 @@
                     android:text="NotifyMe"
                     android:layout_marginTop="40dp"/>
                 <androidx.cardview.widget.CardView
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     style="@style/loginCard"
                     app:cardCornerRadius="@dimen/loginCardRadius"
                     android:elevation="5dp"
@@ -110,30 +109,42 @@
                                 android:inputType="textEmailAddress"
                                 android:maxLines="1"
                                 android:id="@+id/email_id"
-                                android:hint="@string/login_email_hint"/>
+                                android:hint="Email ID"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/parent"
-                            android:layout_marginTop="@dimen/signup_text_margin_top">
-                            <Spinner
-                                android:layout_height="match_parent"
-                                android:layout_width="match_parent"
-                                android:id="@+id/dept_id"
-                                />
-                        </com.google.android.material.textfield.TextInputLayout>
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView7"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/signup_text_margin_top"
+                            android:background="@drawable/dropdown_corner"
+                            app:cardCornerRadius="5dp">
 
+                            <com.google.android.material.textfield.TextInputLayout style="@style/parent">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/parent"
-                            android:layout_marginTop="@dimen/signup_text_margin_top">
-                            <Spinner
-                                android:layout_height="match_parent"
-                                android:layout_width="match_parent"
-                                android:id="@+id/course_id"
-                                />
-                        </com.google.android.material.textfield.TextInputLayout>
+                                <Spinner
+                                    android:id="@+id/dept_id"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </androidx.cardview.widget.CardView>
 
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView8"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/signup_text_margin_top"
+                            android:background="@drawable/dropdown_corner"
+                            app:cardCornerRadius="5dp">
+
+                            <com.google.android.material.textfield.TextInputLayout style="@style/parent">
+
+                                <Spinner
+                                    android:id="@+id/course_id"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </androidx.cardview.widget.CardView>
 
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -163,7 +174,7 @@
                             android:layout_marginTop="@dimen/signup_text_margin_top">
                             <EditText
                                 style="@style/modifiedEditText"
-                                android:hint="@string/login_password_hint"
+                                android:hint="Confirm password"
                                 android:maxLines="1"
                                 android:id="@+id/c_password"
                                 android:inputType="textPassword"/>
@@ -179,8 +190,10 @@
                             style="@style/parent"
                             android:textAlignment="center"
                             android:textStyle="bold"
+                            android:id="@+id/signin"
                             android:textColor="@color/primaryTextColor"
                             android:text="@string/signup_login_hint"
+                            android:clickable="true"
                             android:layout_marginTop="@dimen/loginViewsMargin"/>
 
                     </LinearLayout>

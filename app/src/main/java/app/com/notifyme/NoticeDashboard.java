@@ -2,40 +2,53 @@ package app.com.notifyme;
 
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.bumptech.glide.Glide;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
-import android.util.Log;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import android.view.LayoutInflater;
-import android.view.View;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
-import com.google.android.material.navigation.NavigationView;
-import androidx.drawerlayout.widget.DrawerLayout;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -45,33 +58,11 @@ import app.com.common.GlobalMethods;
 import app.com.common.Singleton;
 import app.com.fragments.FilterFragment;
 import app.com.fragments.NoticeExtendedFragment;
+import app.com.fragments.NotificationFragment;
 import app.com.fragments.SortFragment;
 import app.com.models.Notice;
 
-import android.view.Menu;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.OnItemClickListener, SortFragment.ItemClickListener {
+public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.OnItemClickListener, SortFragment.ItemClickListener, FilterFragment.ItemClickListener {
 
     private AppBarConfiguration mAppBarConfiguration;
     private List<Notice> noticeListData;
@@ -81,11 +72,51 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
     private ProgressDialog progressDialog;
     private RecyclerView.LayoutManager SLayout;
     private View v;
-    private ArrayList<Notice> noticeModelArrayList;
-    private TextView writeheretext;
+    private ArrayList<Notice> noticeModelArrayList, filteredArrayList;
+    private TextView writeheretext, navbarusername, navbaryearcourse, navbardesignation;
+    private NavigationView navigationView;
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
+    private ArrayList<String>idOpened;
+    private LayerDrawable icon;
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("HAR","aya");
+                Log.d("HAR",String.valueOf(pref.getInt("notificationStatusCount", -1)));
+                if (pref.getInt("notificationStatusCount", -1) != -1) {
+                    GlobalMethods.setCountForNotifcation(icon, String.valueOf(pref.getInt("notificationStatusCount", -1)), NoticeDashboard.this);
+                } else {
+                    GlobalMethods.setCountForNotifcation(icon, "0", NoticeDashboard.this);
+                }
+            }
+
+    };
+
+
+    /* to remove menu item*/
+    private void hideItem()
+    {
+        Menu nav_Menu = navigationView.getMenu();
+        nav_Menu.findItem(R.id.nav_access).setVisible(false);
+        nav_Menu.findItem(R.id.nav_request_status).setVisible(false);
+
+    }
+
+    private void PopulateData(){
+        noticeView = findViewById(R.id.recyclerView);
+        noticeView.setHasFixedSize(true);
+        SLayout = new LinearLayoutManager(this);
+        noticeView.setLayoutManager(SLayout);
+        noticeListData = new ArrayList<>();
+        LoadData();
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         boolean networkStatus = CheckConnection.getInstance(this).getNetworkStatus();
         if(networkStatus==true) {
@@ -93,22 +124,106 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             Toolbar toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
-            NavigationView navigationView = findViewById(R.id.nav_view);
+             navigationView = findViewById(R.id.nav_view);
             getSupportActionBar().setTitle("Notify Me");
+             pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
+            editor = pref.edit();
+            View viewNav = navigationView.getHeaderView(0);
+            navbarusername = viewNav.findViewById(R.id.userName);
+            navbaryearcourse = viewNav.findViewById(R.id.courseyear);
+            navbardesignation = viewNav.findViewById(R.id.designation);
+
+
+            if(pref.getString("name","")!="" ){
+                navbarusername.setText(pref.getString("name",""));
+            }
+            else if(pref.getString("fname","")!=""){
+                navbarusername.setText(pref.getString("fname",""));
+            }
+
+            if(pref.getString("fregistrationNumber","")==""){
+                navbaryearcourse.setText(pref.getString("departmentname","")+", "+
+                        pref.getString("coursename","")+", "+ pref.getInt("year", 0) +" year");
+            }
+            else{
+                navbardesignation.setVisibility(View.VISIBLE);
+                navbardesignation.setText(pref.getString("fdesignation","")+",");
+                navbaryearcourse.setText(pref.getString("fdepartmentname","")+" department");
+            }
+
+            /* to remove create notice*/
+            if(pref.getInt("isCoordinator",-1)==0){
+                TextView notice = findViewById(R.id.writeheretext);
+                SearchView view = findViewById(R.id.searchView);
+                SwipeRefreshLayout scrollView = findViewById(R.id.swiperefresh_items);
+                ConstraintLayout constraintLayout = findViewById(R.id.inner);
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.clone(constraintLayout);
+                constraintSet.connect(view.getId(),ConstraintSet.TOP,constraintLayout.getId(),ConstraintSet.TOP,224);
+                constraintSet.connect(scrollView.getId(),ConstraintSet.TOP,constraintLayout.getId(),ConstraintSet.BOTTOM,360);
+                constraintSet.applyTo(constraintLayout);
+                notice.setVisibility(View.GONE);
+            }
             // Passing each menu ID as a set of Ids because each
             // menu should be considered as top level destinations.
             mAppBarConfiguration = new AppBarConfiguration.Builder(
-                    R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
-                    R.id.nav_tools, R.id.nav_share, R.id.nav_send)
+                   R.id.nav_dash, R.id.nav_notice, R.id.nav_profile, R.id.nav_access,
+                    R.id.nav_logout)
                     .setDrawerLayout(drawer)
                     .build();
             NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
             NavigationUI.setupWithNavController(navigationView, navController);
+            if(pref.getInt("isCoordinator",-1)!=2){
+                hideItem();
+            }
+             if(pref.getInt("isCoordinator",-1)==0){
+                hideMore();
+            }
+            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.nav_logout:
+                            AlertDialog.Builder builder = new AlertDialog.Builder(NoticeDashboard.this);
+                            builder.setMessage("Are you sure you want to logout?");
+                            builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    GlobalMethods.logout(NoticeDashboard.this,v);
+                                    finish();
+                                    dialogInterface.cancel();
+                                }
+                            });
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                            final AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
+                            return true;
+                        case R.id.nav_access:
+                            startActivity(new Intent(NoticeDashboard.this,RequestAccessActivity.class));
+                            return true;
+                        case R.id.nav_request_status:
+                            startActivity(new Intent(NoticeDashboard.this,RequestStatus.class));
+                            return true;
+                        case R.id.nav_dash:
+                            startActivity(new Intent(NoticeDashboard.this,NoticeDashboard.class));
+                            return true;
+                        default:return false;
+                    }
+                }
+                    });
+            navigationView.getMenu().getItem(0).setChecked(true);
 
             SearchView simpleSearchView = findViewById(R.id.searchView);
             UpdateSearchView(simpleSearchView);
             noticeModelArrayList = new ArrayList<>();
+
             writeheretext = findViewById(R.id.writeheretext);
             writeheretext.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -140,10 +255,11 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    Log.d("HAR", "hello");
+                    LoadData();
                     swipeRefreshLayout.setRefreshing(false);
                 }
             });
+
 
 
             PopulateData();
@@ -152,21 +268,67 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             setContentView(R.layout.nointernet_view);
         }
 
+
+
+    }
+
+    private void hideMore() {
+        Menu nav_Menu = navigationView.getMenu();
+        nav_Menu.findItem(R.id.nav_notice).setVisible(false);
+
     }
 
 
-    private void PopulateData(){
-        noticeView = findViewById(R.id.recyclerView);
-        noticeView.setHasFixedSize(true);
-        SLayout = new LinearLayoutManager(this);
-        noticeView.setLayoutManager(SLayout);
-        noticeListData = new ArrayList<>();
-        LoadData();
+    private void UpdateSearchView(SearchView searchView){
+        searchView.setActivated(true);
+        searchView.setQueryHint("Search Notice..");
+        searchView.onActionViewExpanded();
+        searchView.setIconified(false);
+        searchView.setFocusable(false);
+        searchView.clearFocus();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // do something on text submit
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                noticeAdapter.getFilter().filter(newText);
+                if(noticeModelArrayList!=null){
+                    ArrayList<Notice>temp = noticeAdapter.returnToActivity();
+                    noticeModelArrayList.clear();
+                    noticeModelArrayList.addAll(temp);
+                }
+                else{
+                    noticeModelArrayList.addAll(noticeAdapter.returnToActivity());
+                }
+                //noticeModelArrayList = noticeAdapter.returnToActivity()
+                //Collections.copy(noticeModelArrayList,noticeAdapter.returnToActivity());
+
+                    //noticeModelArrayList = noticeAdapter.returnToActivity();
+                return true;
+            }
+        });
+    }
+
+    private void openDialog() {
+        FilterFragment addPhotoBottomDialogFragment =
+                FilterFragment.newInstance(this, noticeModelArrayList, noticeAdapter);
+        addPhotoBottomDialogFragment.show(getSupportFragmentManager(),
+                FilterFragment.TAG);
     }
 
     private void LoadData() {
-        Log.d("HAR","sys");
-        final String URL = GlobalMethods.getURL()+"fetchNotice";
+        String URL;
+        if(pref.getString("fregistrationNumber","")!=""){
+            URL = GlobalMethods.getURL()+"faculty_fetchNotices";
+        }
+        else {
+             URL = GlobalMethods.getURL() + "fetchNotice";
+        }
         progressDialog.show();
         v =findViewById(R.id.root);
 
@@ -199,6 +361,7 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                                 Notice noticeModel = new Notice();
                                 ArrayList<String> attachmentList = new ArrayList<>();
                                 JSONObject dataobj = dataArray.getJSONObject(i);
+                                noticeModel.setId(dataobj.getString("Notice_id"));
                                 noticeModel.setName("Posted by: " + dataobj.getString("name"));
                                 noticeModel.setEmailID(dataobj.getString("email_id"));
                                 noticeModel.setContact(dataobj.getString("contact"));
@@ -210,21 +373,17 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                                 noticeModel.setIsCoordinator(dataobj.getString("isCoordinator"));
                                 noticeModel.setDepartment(dataobj.getString("department"));
                                 noticeModel.setCourse(dataobj.getString("course"));
-                                String[] attachments = dataobj.getString("Attachments").split(",");
-                                for(String path : attachments){
-                                    attachmentList.add(path);
+                                noticeModel.setScope(dataobj.getString("scope"));
+                                noticeModel.setEventName(dataobj.getString("eventName"));
+                                if(!dataobj.getString("Attachments").equals("null")) {
+                                    String[] attachments = dataobj.getString("Attachments").split(",");
+                                    for (String path : attachments) {
+                                        attachmentList.add(path);
+                                    }
+                                    noticeModel.setAttachments(attachmentList);
                                 }
-                                noticeModel.setAttachments(attachmentList);
-                                SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
                                 String dateOfCreation = dataobj.getString("date_time");
-                                try {
-
-                                    Date date = formatter.parse(dateOfCreation);
-                                    noticeModel.setTimestamp(formatter.format(date));
-
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
+                                noticeModel.setTimestamp(dateOfCreation);
                                 noticeModelArrayList.add(noticeModel);
 
                             }
@@ -270,54 +429,94 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> parameters = new HashMap<>();
                 // Log.d("HAR",String.valueOf(DepartmentID));
-                parameters.put("scope", "1");
-                parameters.put("dept_id", "2");
-                parameters.put("year", "2");
+                if(pref.getString("fregistrationNumber","")!=""){
+                    if (pref.getInt("fdepartmentid", -1) != -1) {
+                        parameters.put("dept_id", String.valueOf(pref.getInt("fdepartmentid", -1)));
+                    }
+                    if (pref.getString("fcourse", "") != "") {
+                        parameters.put("course_id", String.valueOf(pref.getString("fcourse", "")));
+                    }
+                    if (pref.getString("fyear", "") != "") {
+                        parameters.put("year", String.valueOf(pref.getString("fyear", "")));
+                    }
+                }
+                else {
+                    if (pref.getInt("departmentid", -1) != -1)
+                        parameters.put("dept_id", String.valueOf(pref.getInt("departmentid", -1)));
+                    if (pref.getInt("courseid", -1) != -1)
+                        parameters.put("course_id", String.valueOf(pref.getInt("courseid", -1)));
+                    if (pref.getInt("year", -1) != -1)
+                        parameters.put("year", String.valueOf(pref.getInt("year", -1)));
+                }
                 return parameters;
             }
         };
         Singleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
-
-    private void UpdateSearchView(SearchView searchView){
-        searchView.setActivated(true);
-        searchView.setQueryHint("Search Notice..");
-        searchView.onActionViewExpanded();
-        searchView.setIconified(false);
-        searchView.setFocusable(false);
-        searchView.clearFocus();
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // do something on text submit
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                noticeAdapter.getFilter().filter(newText);
-                //noticeModelArrayList = noticeAdapter.returnToActivity()
-                //Collections.copy(noticeModelArrayList,noticeAdapter.returnToActivity());
-
-                    //noticeModelArrayList = noticeAdapter.returnToActivity();
-                return true;
-            }
-        });
-    }
-
-    private void openDialog() {
-        FilterFragment.display(getSupportFragmentManager());
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.notice_dashboard, menu);
+        MenuItem menuItem = menu.findItem(R.id.ic_group);
+         icon = (LayerDrawable) menuItem.getIcon();
+
+        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                NotificationFragment.display(getSupportFragmentManager(), NoticeDashboard.this);
+                GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
+                editor.putInt("notificationStatusCount",0);
+                return true;
+            }
+        });
+        GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
+
+
         return true;
+
     }
 
+    @Override
+    public void onStart(){
+    super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+    }
+
+    @Override
+    public void onRestart(){
+        super.onRestart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+    }
+
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+
+
+    }
    @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -347,6 +546,13 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
         designation.setTypeface(null, Typeface.NORMAL);
         date.setTextColor(Color.DKGRAY);
         date.setTypeface(null, Typeface.NORMAL);
+        idOpened = new ArrayList<>();
+        idOpened.add(rowRecord.getId());
+        Gson gson = new Gson();
+        String records = gson.toJson(idOpened);
+        pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
+        editor = pref.edit();
+        editor.putString("seennotices",records);
     }
 
     @Override
@@ -364,4 +570,6 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
         Collections.sort(tempNoticeArray,Notice.dateCompartor);
         noticeAdapter.swap(tempNoticeArray);
     }
+
+
 }
