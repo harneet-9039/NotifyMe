@@ -51,15 +51,21 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".createNotice"
             android:windowSoftInputMode="adjustPan" />
+        <activity android:name="app.com.admin.Admin"> <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter></activity>
+        <activity android:name="app.com.admin.ViewNotice"></activity>
+        <activity android:name="app.com.admin.ViewRequest"/>
+        <activity android:name="app.com.admin.ViewProfile"/>
+        <activity android:name="app.com.admin.RejectedRequest"/>
+        <activity android:name="app.com.admin.PreviousRequest"/>
     </application>
 
 </manifest>
