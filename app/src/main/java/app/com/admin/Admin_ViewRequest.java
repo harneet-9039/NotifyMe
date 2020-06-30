@@ -54,6 +54,9 @@ public class Admin_ViewRequest extends AppCompatActivity {
         CommonWorkOfMenuItems();
         viewRequestModelArrayList = new ArrayList<>();
         progressDialog = new ProgressDialog(this);
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Notify Me");
         LoadData();
     }
 

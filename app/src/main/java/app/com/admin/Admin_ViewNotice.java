@@ -69,7 +69,7 @@ public class Admin_ViewNotice extends AppCompatActivity implements NoticeAdapter
         // setContentView(R.layout.activity_view_notice);
         boolean networkStatus = CheckConnection.getInstance(this).getNetworkStatus();
         if(networkStatus==true) {
-            setContentView(R.layout.activity_view_notice);
+            setContentView(R.layout.admin_activity_view_notice);
             Toolbar toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
