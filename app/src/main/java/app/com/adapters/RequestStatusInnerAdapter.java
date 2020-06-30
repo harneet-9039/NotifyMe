@@ -55,6 +55,7 @@ public class RequestStatusInnerAdapter  extends ArrayAdapter<RequestViewInnerMod
         else{
             name.setText(request.getName());
         }
+
         regID.setText("("+request.getRegid()+")");
         if(request.getStatus().equals("0")){
             status.setTextColor(ctx.getResources().getColor(R.color.lowpriority));
@@ -75,7 +76,6 @@ public class RequestStatusInnerAdapter  extends ArrayAdapter<RequestViewInnerMod
             status.setText("No status");
             status.setTypeface(null, Typeface.BOLD);
             status.setTextColor(ctx.getResources().getColor(R.color.black));
-
         }
 
 

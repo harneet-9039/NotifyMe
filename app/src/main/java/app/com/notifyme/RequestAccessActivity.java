@@ -387,6 +387,12 @@ public class RequestAccessActivity extends AppCompatActivity {
 
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+        if(pref.getInt("isCoordinator",-1)!=2){
+            hideItem();
+        }
+        if(pref.getInt("isCoordinator",-1)==0){
+            hideMore();
+        }
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -421,11 +427,23 @@ public class RequestAccessActivity extends AppCompatActivity {
                     case R.id.nav_dash:
                         startActivity(new Intent(RequestAccessActivity.this,NoticeDashboard.class));
                         return true;
+                    case R.id.nav_notice:
+                        startActivity(new Intent(RequestAccessActivity.this,ViewNotice.class));
+                        return true;
+                    case R.id.nav_profile:
+                        startActivity(new Intent(RequestAccessActivity.this,UserProfile.class));
+                        return true;
                     default:return false;
                 }
             }
         });
         navigationView.getMenu().getItem(3).setChecked(true);
+    }
+
+    private void hideMore() {
+        Menu nav_Menu = navigationView.getMenu();
+        nav_Menu.findItem(R.id.nav_notice).setVisible(false);
+
     }
 
     @Override
@@ -445,6 +463,14 @@ public class RequestAccessActivity extends AppCompatActivity {
         });
         GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
                 return true;
+
+    }
+
+    private void hideItem()
+    {
+        Menu nav_Menu = navigationView.getMenu();
+        nav_Menu.findItem(R.id.nav_access).setVisible(false);
+        nav_Menu.findItem(R.id.nav_request_status).setVisible(false);
 
     }
 

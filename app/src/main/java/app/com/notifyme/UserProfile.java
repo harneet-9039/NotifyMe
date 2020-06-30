@@ -1,6 +1,5 @@
 package app.com.notifyme;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,30 +8,13 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,169 +25,43 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import app.com.adapters.RequestStatusAdapter;
 import app.com.common.GlobalMethods;
-import app.com.common.Singleton;
 import app.com.fragments.NotificationFragment;
-import app.com.models.RequestStatusModel;
 
-public class RequestStatus extends AppCompatActivity {
-    private static final String TAG = "REQUEST_ACTIVITY";
+public class UserProfile extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private NavigationView navigationView;
-    private TextView navbarusername, navbaryearcourse, navbardesignation, plusButton;
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
-    private ProgressDialog progressDialog;
     private DrawerLayout drawer;
     private View v;
     private LayerDrawable icon;
-    private ArrayList<RequestStatusModel> requestStatusModelArrayList;
-    private RequestStatusAdapter requestStatusAdapter;
-    private ListView listView;
+    private TextView navbarusername, navbaryearcourse, navbardesignation, plusButton;
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d("HAR","aya");
             Log.d("HAR",String.valueOf(pref.getInt("notificationStatusCount", -1)));
             if (pref.getInt("notificationStatusCount", -1) != -1) {
-                GlobalMethods.setCountForNotifcation(icon, String.valueOf(pref.getInt("notificationStatusCount", -1)), RequestStatus.this);
+                GlobalMethods.setCountForNotifcation(icon, String.valueOf(pref.getInt("notificationStatusCount", -1)), UserProfile.this);
             } else {
-                GlobalMethods.setCountForNotifcation(icon, "0", RequestStatus.this);
+                GlobalMethods.setCountForNotifcation(icon, "0", UserProfile.this);
             }
         }
 
     };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_request_status);
+        setContentView(R.layout.activity_user_profile);
         CommonWorkOfMenuItems();
-        listView = findViewById(R.id.mainlist);
-        requestStatusModelArrayList = new ArrayList<>();
-        progressDialog = new ProgressDialog(this);
-        LoadData();
-    }
-
-    private void LoadData() {
-
-        String URL = GlobalMethods.getURL()+"viewRequestStatus";
-        progressDialog.show();
-        progressDialog.setMessage("Fetching your requests...");
-        v =findViewById(R.id.mainlayoutcons);
-
-        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("HAR",response);
-
-                requestStatusModelArrayList.clear();
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    if (jsonObject.getBoolean("status")==true) {
-
-                        JSONArray dataArray = jsonObject.getJSONArray("data");
-                        if(dataArray.length()<1){
-                            Snackbar.make(v, "No requests for you",
-                                    Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("Retry", new View.OnClickListener(){
-
-                                        @Override
-                                        public void onClick(View view) {
-                                            LoadData();
-                                        }
-                                    }).show();
-                        }
-                        else {
-
-                            for (int i = 0; i < dataArray.length(); i++) {
-
-                                RequestStatusModel noticeModel = new RequestStatusModel();
-                                ArrayList<String> attachmentList = new ArrayList<>();
-                                JSONObject dataobj = dataArray.getJSONObject(i);
-
-                                noticeModel.setRequestID(dataobj.getString("request_id"));
-                                noticeModel.setDate(dataobj.getString("date"));
-                                noticeModel.setValidity(String.valueOf(dataobj.getInt("duration")));
-                                String[] names = dataobj.getString("Student_name").split(",");
-                                ArrayList<String> studentnameList = new ArrayList<>();
-                                for(String name: names){
-                                    studentnameList.add(name);
-                                }
-                                String[] regid = dataobj.getString("Student_id").split(",");
-                                ArrayList<String> studentIDList = new ArrayList<>();
-                                for(String name: regid){
-                                    studentIDList.add(name);
-                                }
-                                String[] status = dataobj.getString("status").split(",");
-                                ArrayList<String> statusList = new ArrayList<>();
-                                for(String name: status){
-                                    statusList.add(name);
-                                }
-                                noticeModel.setNames(studentnameList);
-                                noticeModel.setRegistrationID(studentIDList);
-                                noticeModel.setStatus(statusList);
-                                requestStatusModelArrayList.add(noticeModel);
-
-                            }
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Snackbar.make(v, "Exception Occured",
-                            Snackbar.LENGTH_LONG)
-                            .show();
-                }
-
-
-
-                Collections.sort(requestStatusModelArrayList,RequestStatusModel.priorityComparator);
-                requestStatusAdapter = new RequestStatusAdapter(RequestStatus.this,requestStatusModelArrayList,v);
-                listView.setAdapter(requestStatusAdapter);
-                progressDialog.dismiss();
-
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("HAR",error.toString());
-                Snackbar.make(v, "Error Response from Server",
-                        Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Retry", new View.OnClickListener(){
-
-                            @Override
-                            public void onClick(View view) {
-                                LoadData();
-                            }
-                        }).show();
-                progressDialog.dismiss();
-
-
-            }
-        })
-        {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parameters = new HashMap<>();
-                // Log.d("HAR",String.valueOf(DepartmentID));
-                if(pref.getString("fregistrationNumber","")!="") {
-                    parameters.put("faculty_id",pref.getString("fregistrationNumber",""));
-                }
-                return parameters;
-            }
-        };
-        Singleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
-
     }
 
     private void CommonWorkOfMenuItems() {
 
-        Toolbar toolbar = findViewById(R.id.requesttoolbarstatus);
+        Toolbar toolbar = findViewById(R.id.requesttoolbaruserprofile);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(Html.fromHtml("<small>View request status</small>"));
+        getSupportActionBar().setTitle("Profile");
         drawer = findViewById(R.id.drawer_layout_request);
         navigationView = findViewById(R.id.nav_view_request);
 
@@ -253,12 +109,12 @@ public class RequestStatus extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.nav_logout:
-                        AlertDialog.Builder builder = new AlertDialog.Builder(RequestStatus.this);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(UserProfile.this);
                         builder.setMessage("Are you sure you want to logout?");
                         builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                GlobalMethods.logout(RequestStatus.this,v);
+                                GlobalMethods.logout(UserProfile.this,v);
                                 finish();
                                 dialogInterface.cancel();
                             }
@@ -273,25 +129,25 @@ public class RequestStatus extends AppCompatActivity {
                         alertDialog.show();
                         return true;
                     case R.id.nav_access:
-                        startActivity(new Intent(RequestStatus.this,RequestAccessActivity.class));
+                        startActivity(new Intent(UserProfile.this,RequestAccessActivity.class));
                         return true;
                     case R.id.nav_request_status:
-                        startActivity(new Intent(RequestStatus.this,RequestStatus.class));
+                        startActivity(new Intent(UserProfile.this,RequestStatus.class));
                         return true;
                     case R.id.nav_dash:
-                        startActivity(new Intent(RequestStatus.this,NoticeDashboard.class));
+                        startActivity(new Intent(UserProfile.this,NoticeDashboard.class));
                         return true;
                     case R.id.nav_notice:
-                        startActivity(new Intent(RequestStatus.this,ViewNotice.class));
+                        startActivity(new Intent(UserProfile.this,ViewNotice.class));
                         return true;
                     case R.id.nav_profile:
-                        startActivity(new Intent(RequestStatus.this,UserProfile.class));
+                        startActivity(new Intent(UserProfile.this,UserProfile.class));
                         return true;
                     default:return false;
                 }
             }
         });
-        navigationView.getMenu().getItem(4).setChecked(true);
+        navigationView.getMenu().getItem(2).setChecked(true);
     }
 
     private void hideMore() {
@@ -309,7 +165,7 @@ public class RequestStatus extends AppCompatActivity {
         menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                NotificationFragment.display(getSupportFragmentManager(), RequestStatus.this);
+                NotificationFragment.display(getSupportFragmentManager(), UserProfile.this);
                 GlobalMethods.setCountForNotifcation(icon,"0",getApplicationContext());
                 editor.putInt("notificationStatusCount",0);
                 return true;
@@ -366,6 +222,5 @@ public class RequestStatus extends AppCompatActivity {
                 new IntentFilter("notification")
         );
     }
-
 
 }

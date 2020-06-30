@@ -8,8 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +24,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,7 +74,6 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
     private NavigationView navigationView;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
-    private ArrayList<String>idOpened;
     private LayerDrawable icon;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -213,6 +209,12 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
                             return true;
                         case R.id.nav_dash:
                             startActivity(new Intent(NoticeDashboard.this,NoticeDashboard.class));
+                            return true;
+                        case R.id.nav_notice:
+                            startActivity(new Intent(NoticeDashboard.this,ViewNotice.class));
+                            return true;
+                        case R.id.nav_profile:
+                            startActivity(new Intent(NoticeDashboard.this,UserProfile.class));
                             return true;
                         default:return false;
                     }
@@ -400,7 +402,7 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
 
 
 
-                noticeAdapter = new NoticeAdapter(NoticeDashboard.this,noticeModelArrayList,NoticeDashboard.this);
+                noticeAdapter = new NoticeAdapter(NoticeDashboard.this,noticeModelArrayList,NoticeDashboard.this,v);
                 noticeView.setAdapter(noticeAdapter);
                 progressDialog.dismiss();
 
@@ -526,15 +528,15 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
 
     @Override
     public void onItemClick(ArrayList<Notice> list, View v, int position) {
-        Notice rowRecord = list.get(position);
-        TextView title = v.findViewById(R.id.title);
+       Notice rowRecord = list.get(position);
+        /*TextView title = v.findViewById(R.id.title);
         TextView desc = v.findViewById(R.id.desc);
         TextView priority = v.findViewById(R.id.priority);
         TextView name = v.findViewById(R.id.name);
         TextView designation = v.findViewById(R.id.designation);
-        TextView date = v.findViewById(R.id.date);
+        TextView date = v.findViewById(R.id.date);*/
         NoticeExtendedFragment.display(getSupportFragmentManager(),rowRecord, NoticeDashboard.this);
-        title.setTextColor(Color.DKGRAY);
+       /* title.setTextColor(Color.DKGRAY);
         title.setTypeface(null, Typeface.NORMAL);
         desc.setTextColor(Color.DKGRAY);
         desc.setTypeface(null, Typeface.NORMAL);
@@ -545,14 +547,8 @@ public class NoticeDashboard extends AppCompatActivity implements NoticeAdapter.
         designation.setTextColor(Color.DKGRAY);
         designation.setTypeface(null, Typeface.NORMAL);
         date.setTextColor(Color.DKGRAY);
-        date.setTypeface(null, Typeface.NORMAL);
-        idOpened = new ArrayList<>();
-        idOpened.add(rowRecord.getId());
-        Gson gson = new Gson();
-        String records = gson.toJson(idOpened);
-        pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
-        editor = pref.edit();
-        editor.putString("seennotices",records);
+        date.setTypeface(null, Typeface.NORMAL);*/
+
     }
 
     @Override

@@ -16,13 +16,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RequestStatus"></activity>
+        <activity android:name=".UserProfile"></activity>
+        <activity android:name=".ViewNotice" />
+        <activity android:name=".RequestStatus" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notifications_none_black_24dp" />
 
-        <activity android:name=".RequestAccessActivity"></activity>
+        <activity android:name=".RequestAccessActivity" />
 
         <service
             android:name="app.com.services.NotificationService"
@@ -35,7 +37,7 @@
         <service
             android:name="app.com.services.TestJobService"
             android:label="Word service"
-            android:permission="android.permission.BIND_JOB_SERVICE"></service>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver android:name=".NoticeDashboard">
             <intent-filter>

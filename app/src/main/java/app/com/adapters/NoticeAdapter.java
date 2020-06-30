@@ -1,5 +1,6 @@
 package app.com.adapters;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -13,6 +14,11 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.DecodeFormat;
@@ -20,12 +26,20 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import app.com.common.GlobalMethods;
+import app.com.common.Singleton;
 import app.com.models.Notice;
 import app.com.notifyme.R;
 
@@ -34,9 +48,12 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
     private Context c;
     private ArrayList<Notice> noticeModelArrayList;
     private ArrayList<Notice> noticeModelArrayListFilter;
+    private ProgressDialog progressDialog;
     private OnItemClickListener onItemClickListener;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
+    private View view;
+
     public void swap(List list){
         if (noticeModelArrayListFilter != null) {
             noticeModelArrayListFilter.clear();
@@ -48,8 +65,9 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         notifyDataSetChanged();
     }
 
-    public NoticeAdapter(Context ctx, ArrayList<Notice> noticeModelArrayList, OnItemClickListener onItemClickListener){
-        c = ctx;
+    public NoticeAdapter(Context ctx, ArrayList<Notice> noticeModelArrayList, OnItemClickListener onItemClickListener, View mainView){
+        this.c = ctx;
+        this.view=mainView;
         inflater = LayoutInflater.from(ctx);
         this.noticeModelArrayList = noticeModelArrayList;
         this.noticeModelArrayListFilter = new ArrayList<>();
@@ -62,14 +80,20 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
 
     @Override
     public NoticeAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        View view = inflater.inflate(R.layout.singlenotice_view, parent, false);
-        MyViewHolder holder = new MyViewHolder(view,onItemClickListener);
+        MyViewHolder holder;
+        if(c.getClass().getSimpleName().equals("ViewNotice")){
+            View view = inflater.inflate(R.layout.single_notice_view_profile, parent, false);
+            holder = new MyViewHolder(view, onItemClickListener);
+        }
+        else {
+            View view = inflater.inflate(R.layout.singlenotice_view, parent, false);
+            holder = new MyViewHolder(view, onItemClickListener);
+        }
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(final NoticeAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(final NoticeAdapter.MyViewHolder holder, final int position) {
         if(noticeModelArrayListFilter.get(position).getImages().equals("null")){
             Glide.with(c)
                     .load(R.drawable.banner)
@@ -136,27 +160,91 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
 
                 holder.desgination.setText("Coordinator (" + noticeModelArrayListFilter.get(position).getEventName() + ")");
             }
+            else{
+                holder.desgination.setText("Coordinator");
+            }
         }
         else{
             holder.desgination.setText(noticeModelArrayListFilter.get(position).getIsCoordinator());
         }
 
-        if(pref.getString("seennotices","")!=""){
+        if(c.getClass().getSimpleName().equals("ViewNotice")){
+            if(noticeModelArrayListFilter.get(position).getScope().equals("1")){
+                holder.scope.setText("Notice for: public");
+            }
+            else if(noticeModelArrayListFilter.get(position).getScope().equals("2")){
+                holder.scope.setText("Notice for: " + noticeModelArrayListFilter.get(position).getScopeDepartment()+" department");
+            }
+            else if(noticeModelArrayListFilter.get(position).getScope().equals("3")){
+                holder.scope.setText("Notice for: " + noticeModelArrayListFilter.get(position).getScopeDepartment()+" department, "+
+                        noticeModelArrayListFilter.get(position).getScopeCourse()+" course");
+            }
+            else if(noticeModelArrayListFilter.get(position).getScope().equals("4")){
+                holder.scope.setText("Notice for: " + noticeModelArrayListFilter.get(position).getScopeDepartment()+" department, "+
+                        noticeModelArrayListFilter.get(position).getScopeCourse()+" course, "+
+                        noticeModelArrayListFilter.get(position).getScopeYear()+" year");
+            }
+            holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                    progressDialog = new ProgressDialog(c);
+                    progressDialog.setMessage("Deleting notice, Please wait...");
+                    progressDialog.show();
+                    String URL = GlobalMethods.getURL()+"deleteNotice";
+                    StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d("HAR",response);
 
-          /*  holder.title.setTextColor(Color.DKGRAY);
-            holder.title.setTypeface(null, Typeface.NORMAL);
-            holder.desc.setTextColor(Color.DKGRAY);
-            holder.desc.setTypeface(null, Typeface.NORMAL);
-            holder.priority.setTextColor(Color.DKGRAY);
-            holder.priority.setTypeface(null, Typeface.NORMAL);
-            holder.name.setTextColor(Color.DKGRAY);
-            holder.name.setTypeface(null, Typeface.NORMAL);
-            holder.desgination.setTextColor(Color.DKGRAY);
-            holder.desgination.setTypeface(null, Typeface.NORMAL);
-            holder.date.setTextColor(Color.DKGRAY);
-            holder.date.setTypeface(null, Typeface.NORMAL);
-            */
+                            noticeModelArrayList.clear();
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                if (jsonObject.getString("status").equals("true")) {
+                                    progressDialog.dismiss();
+                                    Snackbar.make(view, "Notice deleted successfully",
+                                            Snackbar.LENGTH_LONG)
+                                           .show();
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                progressDialog.dismiss();
+                                Snackbar.make(view, "Error parsing data from server",
+                                        Snackbar.LENGTH_LONG)
+                                        .show();
+                            }
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("HAR",error.toString());
+                            progressDialog.dismiss();
+                            Snackbar.make(view, "Internal server error",
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
+
+
+
+                        }
+                    })
+                    {
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            Map<String, String> parameters = new HashMap<>();
+                            // Log.d("HAR",String.valueOf(DepartmentID));
+                            parameters.put("notice_id",noticeModelArrayListFilter.get(position).getId());
+                            return parameters;
+                        }
+                    };
+                    Singleton.getInstance(c).addToRequestQueue(jsonObjectRequest);
+                }
+            });
         }
+      /* */
+
     }
 
     @Override
@@ -166,6 +254,7 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
 
     public interface OnItemClickListener{
         void onItemClick(ArrayList<Notice> notice,View v, int position);
+
     }
 
 
@@ -217,7 +306,7 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
         }
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        TextView name, desgination, priority, title, desc, date;
+        TextView name, desgination, priority, title, desc, date, deleteButton, scope;
         ImageView bannerImage;
         OnItemClickListener onItemClickListener;
         public MyViewHolder(View itemView, OnItemClickListener onItemClickListener) {
@@ -232,14 +321,20 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
             title = itemView.findViewById(R.id.title);
             desc = itemView.findViewById(R.id.desc);
             date = itemView.findViewById(R.id.date);
+
             itemView.setOnClickListener(this);
+            if(c.getClass().getSimpleName().equals("ViewNotice")) {
+                deleteButton = itemView.findViewById(R.id.delete);
+                scope = itemView.findViewById(R.id.scope);
+            }
             this.onItemClickListener = onItemClickListener;
 
         }
 
         @Override
         public void onClick(View view) {
-        onItemClickListener.onItemClick(noticeModelArrayListFilter,view,getAdapterPosition());
+            onItemClickListener.onItemClick(noticeModelArrayListFilter,view,getAdapterPosition());
+
 
         }
     }
