@@ -1,34 +1,42 @@
 {
   "project_info": {
-    "project_number": "246062848479",
-    "firebase_url": "https://notifyme-a802d.firebaseio.com",
-    "project_id": "notifyme-a802d",
-    "storage_bucket": "notifyme-a802d.appspot.com"
+    "project_number": "670345931619",
+    "firebase_url": "https://notifyme-3dd8d.firebaseio.com",
+    "project_id": "notifyme-3dd8d",
+    "storage_bucket": "notifyme-3dd8d.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:246062848479:android:6ba4602d99b8b19bd98c6a",
+        "mobilesdk_app_id": "1:670345931619:android:df3d1be42bf62a42c28156",
         "android_client_info": {
           "package_name": "app.com.notifyme"
         }
       },
       "oauth_client": [
         {
-          "client_id": "246062848479-9bd5fbm7i462iu5td7btd0lb4d805ifu.apps.googleusercontent.com",
+          "client_id": "670345931619-o01uqdmcskl3gr8v799ln4lsepoq14lv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.com.notifyme",
+            "certificate_hash": "1f30dcd1cd726524d2ffc99bde416453e89408c2"
+          }
+        },
+        {
+          "client_id": "670345931619-982vmka5s05mqu2svi3sp8covn9v0gh8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBf8HQT3fgZOY4fxIbqmm1HHvLbNUaRpLI"
+          "current_key": "AIzaSyCxMN5ypSOuHv5qIy9CBA3Pmhg6ga_-2pQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "246062848479-9bd5fbm7i462iu5td7btd0lb4d805ifu.apps.googleusercontent.com",
+              "client_id": "670345931619-982vmka5s05mqu2svi3sp8covn9v0gh8.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
