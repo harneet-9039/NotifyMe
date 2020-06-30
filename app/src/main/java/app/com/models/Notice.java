@@ -21,6 +21,9 @@ public class Notice {
     private String course;
     private String scope;
     private String eventName;
+    private String scopeDepartment;
+    private String scopeCourse;
+    private String scopeYear;
 
     public String getId() {
         return id;
@@ -176,5 +179,28 @@ public class Notice {
             //return StudentName2.compareTo(StudentName1);
         }};
 
+    public String getScopeDepartment() {
+        return scopeDepartment;
+    }
+
+    public void setScopeDepartment(String scopeDepartment) {
+        this.scopeDepartment = scopeDepartment;
+    }
+
+    public String getScopeCourse() {
+        return scopeCourse;
+    }
+
+    public void setScopeCourse(String scopeCourse) {
+        this.scopeCourse = scopeCourse;
+    }
+
+    public String getScopeYear() {
+        return scopeYear;
+    }
+
+    public void setScopeYear(String scopeYear) {
+        this.scopeYear = scopeYear;
+    }
 }
 

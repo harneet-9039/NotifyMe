@@ -177,7 +177,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/social/ic_notifications_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_delete_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -187,9 +187,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="00a5ff" />
+                            <entry key="color" value="cd5c5c" />
                             <entry key="opacityPercent" value="78" />
-                            <entry key="outputName" value="ic_notifications_black_24dp" />
+                            <entry key="outputName" value="ic_delete_black_24dp" />
                             <entry key="sourceFile" value="C:\Users\Liza Singla" />
                           </map>
                         </option>
