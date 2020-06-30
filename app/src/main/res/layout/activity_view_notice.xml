@@ -7,7 +7,7 @@
     android:orientation="vertical"
     style="@style/loginParent"
     android:id="@+id/root"
-    tools:context="app.com.admin.ViewNotice">
+    tools:context="app.com.admin.Admin_ViewNotice">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

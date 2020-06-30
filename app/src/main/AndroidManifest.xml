@@ -61,11 +61,11 @@
 
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter></activity>
-        <activity android:name="app.com.admin.ViewNotice"></activity>
-        <activity android:name="app.com.admin.ViewRequest"/>
-        <activity android:name="app.com.admin.ViewProfile"/>
-        <activity android:name="app.com.admin.RejectedRequest"/>
-        <activity android:name="app.com.admin.PreviousRequest"/>
+        <activity android:name="app.com.admin.Admin_ViewNotice"></activity>
+        <activity android:name="app.com.admin.Admin_ViewRequest"/>
+        <activity android:name="app.com.admin.Admin_ViewProfile"/>
+        <activity android:name="app.com.admin.Admin_RejectedRequest"/>
+        <activity android:name="app.com.admin.Admin_PreviousRequest"/>
     </application>
 
 </manifest>
