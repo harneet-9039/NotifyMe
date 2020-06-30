@@ -16,7 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RequestStatus"></activity>
+        <activity android:name=".RequestStatus">
+
+        </activity>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -49,12 +51,27 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity">
+
+        </activity>
+        <activity android:name="app.com.admin.Admin">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="app.com.admin.ApprovedRequest"></activity>
+        <activity android:name="app.com.admin.Menu"></activity>
+        <activity android:name="app.com.admin.Notification"></activity>
+        <activity android:name="app.com.admin.PreviousRequest"></activity>
+        <activity android:name="app.com.admin.RejectedRequest"></activity>
+        <activity android:name="app.com.admin.ViewProfile"></activity>
+        <activity android:name="app.com.admin.ViewNotice">
+        </activity>
+        <activity android:name="app.com.admin.ViewRequest">
+        </activity>
+
         <activity
             android:name=".createNotice"
             android:windowSoftInputMode="adjustPan" />

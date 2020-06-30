@@ -75,7 +75,6 @@ public class RequestStatusInnerAdapter  extends ArrayAdapter<RequestViewInnerMod
             status.setText("No status");
             status.setTypeface(null, Typeface.BOLD);
             status.setTextColor(ctx.getResources().getColor(R.color.black));
-
         }
 
 

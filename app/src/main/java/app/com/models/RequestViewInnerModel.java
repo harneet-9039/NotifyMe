@@ -4,7 +4,7 @@ public class RequestViewInnerModel {
     private String name;
     private String regid;
     private String status;
-
+   
     public String getName() {
         return name;
     }
