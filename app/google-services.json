@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "246062848479",
+    "firebase_url": "https://notifyme-a802d.firebaseio.com",
+    "project_id": "notifyme-a802d",
+    "storage_bucket": "notifyme-a802d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:246062848479:android:6ba4602d99b8b19bd98c6a",
+        "android_client_info": {
+          "package_name": "app.com.notifyme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "246062848479-9bd5fbm7i462iu5td7btd0lb4d805ifu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBf8HQT3fgZOY4fxIbqmm1HHvLbNUaRpLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "246062848479-9bd5fbm7i462iu5td7btd0lb4d805ifu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

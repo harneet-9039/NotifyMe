@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:orientation="vertical"
+style="@style/loginParent"
+tools:context="app.com.admin.Admin">
+<ScrollView
+    style="@style/parent">
+
+    <RelativeLayout
+        style="@style/parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:weightSum="12"
+            android:background="@color/primaryTextColor"
+            >
+
+
+            <ImageView
+                android:id="@+id/menu"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/bellw"
+                android:layout_marginLeft="240dp"
+                >
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/notification"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/hamburgerw"
+                android:layout_marginLeft="8dp">
+            </ImageView>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Notify Me"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="30dp"
+                android:layout_marginLeft="10dp">
+            </TextView>
+        <ImageView
+            android:id="@+id/admin_pic"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/user">
+        </ImageView>
+        <TextView
+            android:id="@+id/admin_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Admin"
+            android:layout_marginTop="76dp"
+            android:layout_marginLeft="80dp"
+            android:textSize="25dp">
+        </TextView>
+        <TextView
+            android:id="@+id/seeprofile_link"
+            android:clickable="true"
+            android:autoLink="all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="See Your Profile"
+            android:textSize="12dp"
+            android:layout_marginTop="110dp"
+            android:layout_marginLeft="80dp">
+        </TextView>
+
+
+        <androidx.cardview.widget.CardView
+            style="@style/loginCard"
+            app:cardBackgroundColor="@color/primaryTextColor"
+            android:clickable="true"
+            android:id="@+id/view_notice"
+            app:cardCornerRadius="12dp"
+            android:elevation="5dp"
+            android:layout_marginVertical="175dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="@dimen/loginViewsMargin"
+            android:layout_marginBottom="@dimen/loginViewsMargin"
+            android:background="@color/primaryTextColor"
+            android:layout_width="150dp"
+            android:layout_height="90dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginLeft="35dp"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                android:text="View Notice"
+                android:textColor="@color/white"
+                ></TextView>
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="50dp"
+                android:background="@drawable/vi"
+                >
+            </ImageView>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            style="@style/loginCard"
+            android:id="@+id/approved_req"
+            app:cardBackgroundColor="@color/primaryTextColor"
+            app:cardCornerRadius="12dp"
+            android:elevation="5dp"
+            android:layout_marginVertical="175dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="193dp"
+            android:layout_marginTop="@dimen/loginViewsMargin"
+            android:layout_marginBottom="@dimen/loginViewsMargin"
+            android:background="@color/primaryTextColor"
+            android:layout_width="150dp"
+            android:layout_height="90dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Approved Request"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="50dp"
+                android:textSize="14dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                ></TextView>
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="50dp"
+                android:background="@drawable/apprv"
+                >
+            </ImageView>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/previous_req"
+            style="@style/loginCard"
+            app:cardBackgroundColor="@color/primaryTextColor"
+            app:cardCornerRadius="12dp"
+            android:elevation="5dp"
+            android:layout_marginVertical="288dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="@dimen/loginViewsMargin"
+            android:layout_marginBottom="@dimen/loginViewsMargin"
+            android:background="@color/primaryTextColor"
+            android:layout_width="150dp"
+            android:layout_height="90dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Previous Request"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="50dp"
+                android:textSize="16dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                ></TextView>
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="50dp"
+                android:background="@drawable/pre"
+                >
+            </ImageView>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/current_req"
+            style="@style/loginCard"
+            app:cardBackgroundColor="@color/primaryTextColor"
+            app:cardCornerRadius="12dp"
+            android:elevation="5dp"
+            android:layout_marginVertical="288dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="193dp"
+            android:layout_marginTop="@dimen/loginViewsMargin"
+            android:layout_marginBottom="@dimen/loginViewsMargin"
+            android:background="@color/primaryTextColor"
+            android:layout_width="150dp"
+            android:layout_height="90dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Current Request"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="50dp"
+                android:textSize="16dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                ></TextView>
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="50dp"
+                android:background="@drawable/curr"
+                >
+            </ImageView>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/rejected_req"
+            style="@style/loginCard"
+            app:cardBackgroundColor="@color/primaryTextColor"
+            app:cardCornerRadius="12dp"
+            android:elevation="5dp"
+            android:layout_marginVertical="400dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="108dp"
+            android:layout_marginTop="@dimen/loginViewsMargin"
+            android:layout_marginBottom="@dimen/loginViewsMargin"
+            android:background="@color/primaryTextColor"
+            android:layout_width="150dp"
+            android:layout_height="90dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rejected Request"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="50dp"
+                android:textSize="16dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                ></TextView>
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="50dp"
+                android:background="@drawable/declin"
+               />
+
+
+        </androidx.cardview.widget.CardView>
+
+
+
+
+    </RelativeLayout>
+</ScrollView>
+</RelativeLayout>

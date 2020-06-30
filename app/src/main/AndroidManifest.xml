@@ -56,11 +56,13 @@
         <activity
             android:name=".createNotice"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name="app.com.admin.Admin"> <intent-filter>
+        <activity android:name="app.com.admin.Admin">
+            <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
             <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter></activity>
+        </intent-filter>
+        </activity>
         <activity android:name="app.com.admin.Admin_ViewNotice"></activity>
         <activity android:name="app.com.admin.Admin_ViewRequest"/>
         <activity android:name="app.com.admin.Admin_ViewProfile"/>
