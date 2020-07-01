@@ -72,35 +72,22 @@ public class Admin_ViewNotice extends AppCompatActivity implements NoticeAdapter
             setContentView(R.layout.admin_activity_view_notice);
             Toolbar toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
-
-            pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
-            editor = pref.edit();
+           // pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
+            //editor = pref.edit();
             //DrawerLayout drawer = findViewById(R.id.drawer_layout);
+            getSupportActionBar().setTitle("Notify Me");
 
-           getSupportActionBar().setTitle("Notify Me");
-            // Passing each menu ID as a set of Ids because each
-            // menu should be considered as top level destinations.
-
-            SearchView simpleSearchView = findViewById(R.id.searchView);
-            UpdateSearchView(simpleSearchView);
-
+           // SearchView simpleSearchView = findViewById(R.id.searchView);
+           // UpdateSearchView(simpleSearchView);
             noticeModelArrayList = new ArrayList<>();
-            /*writeheretext = findViewById(R.id.writeheretext);
-            writeheretext.setOnClickListener(new View.OnClickListener() {
-                @Override
-               public void onClick(View view) {
-                    Intent createNotice =new Intent(ViewNotice.this,ViewNotice.class);
-                    startActivity(createNotice);
-                }
-            });*/
             progressDialog = new ProgressDialog(this);
-
-            findViewById(R.id.filterbutton).setOnClickListener(new View.OnClickListener() {
+            /*findViewById(R.id.filterbutton).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                   // setContentView(R.layout.filter_bottomsheet);
                     openDialog();
                 }
-            });
+            });*/
             findViewById(R.id.sortbutton).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -293,21 +280,6 @@ public class Admin_ViewNotice extends AppCompatActivity implements NoticeAdapter
         addPhotoBottomDialogFragment.show(getSupportFragmentManager(),
                 FilterFragment.TAG);
     }
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.notice_dashboard, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
-*/
     @Override
     public void onItemClick(ArrayList<Notice> list, View v, int position) {
         Notice rowRecord = list.get(position);
