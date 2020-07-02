@@ -15,6 +15,9 @@ import app.com.common.GlobalMethods;
 import app.com.notifyme.R;
 
 public class Admin extends AppCompatActivity implements View.OnClickListener{
+    private CardView viewnotice,currentreq;
+    private TextView seeprofile;
+    private ImageView menu,notification;
     private CardView viewnotice,approvedreq,currentreq,previousreq,rejectedreq;
     private View view;
     private ImageView notification;
@@ -25,7 +28,13 @@ public class Admin extends AppCompatActivity implements View.OnClickListener{
         setContentView(R.layout.activity_admin);
 
         // initialize cardview
+        seeprofile= findViewById(R.id.seeprofile_link);
 
+        menu= findViewById(R.id.menu);
+        notification= findViewById(R.id.notification);
+
+        viewnotice= findViewById(R.id.view_notice);
+        currentreq= findViewById(R.id.current_req);
         menu=(TextView) findViewById(R.id.menu);
       //  notification=(ImageView)findViewById(R.id.notification);;
         viewnotice=(CardView)findViewById(R.id.view_notice);
@@ -40,11 +49,7 @@ public class Admin extends AppCompatActivity implements View.OnClickListener{
       //  notification.setOnClickListener(this);
 
         viewnotice.setOnClickListener(this);
-        approvedreq.setOnClickListener(this);
         currentreq.setOnClickListener(this);
-        previousreq.setOnClickListener(this);
-        rejectedreq.setOnClickListener(this);
-
     }
 
 
@@ -54,26 +59,13 @@ public class Admin extends AppCompatActivity implements View.OnClickListener{
             Intent in=new Intent(Admin.this, Admin_ViewNotice.class);
             startActivity(in);
         }
-        else if(v.getId()==R.id.approved_req)
-        {
-            Intent in=new Intent(Admin.this, Admin_ApprovedRequest.class);
-            startActivity(in);
-        }
-        else if(v.getId()==R.id.previous_req)
-        {
-            Intent in=new Intent(Admin.this, Admin_PreviousRequest.class);
-            startActivity(in);
-        }
+
         else if(v.getId()==R.id.current_req)
         {
             Intent in=new Intent(Admin.this, Admin_ViewRequest.class);
             startActivity(in);
         }
-        else if(v.getId()==R.id.rejected_req)
-        {
-            Intent in=new Intent(Admin.this, Admin_RejectedRequest.class);
-            startActivity(in);
-        }
+
         else if(v.getId()==R.id.menu)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(Admin.this);

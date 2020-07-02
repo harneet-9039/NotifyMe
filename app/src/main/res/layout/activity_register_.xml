@@ -70,6 +70,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/parent"
+                            android:id="@+id/regidfield"
                             android:layout_marginTop="@dimen/signup_text_margin_top">
                             <EditText
                                 style="@style/modifiedEditText"
@@ -81,6 +82,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/parent"
+                            android:id="@+id/namefield"
                             android:layout_marginTop="@dimen/signup_text_margin_top">
                             <EditText
                                 style="@style/modifiedEditText"
@@ -92,6 +94,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/parent"
+                            android:id="@+id/contactfield"
                             android:layout_marginTop="@dimen/signup_text_margin_top">
                             <EditText
                                 style="@style/modifiedEditText"
@@ -103,6 +106,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/parent"
+                            android:id="@+id/emailfield"
                             android:layout_marginTop="@dimen/signup_text_margin_top">
                             <EditText
                                 style="@style/modifiedEditText"
@@ -120,7 +124,7 @@
                             android:background="@drawable/dropdown_corner"
                             app:cardCornerRadius="5dp">
 
-                            <com.google.android.material.textfield.TextInputLayout style="@style/parent">
+                            <com.google.android.material.textfield.TextInputLayout android:id="@+id/deptfield" style="@style/parent">
 
                                 <Spinner
                                     android:id="@+id/dept_id"
@@ -137,7 +141,7 @@
                             android:background="@drawable/dropdown_corner"
                             app:cardCornerRadius="5dp">
 
-                            <com.google.android.material.textfield.TextInputLayout style="@style/parent">
+                            <com.google.android.material.textfield.TextInputLayout android:id="@+id/coursefield" style="@style/parent">
 
                                 <Spinner
                                     android:id="@+id/course_id"
@@ -149,6 +153,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/parent"
+                            android:id="@+id/yearfield"
                             android:layout_marginTop="@dimen/signup_text_margin_top">
                             <EditText
                                 style="@style/modifiedEditText"
@@ -160,6 +165,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/parent"
+                            android:id="@+id/passwordfield"
                             android:layout_marginTop="@dimen/signup_text_margin_top">
                             <EditText
                                 style="@style/modifiedEditText"
@@ -171,6 +177,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/parent"
+                            android:id="@+id/confirmfield"
                             android:layout_marginTop="@dimen/signup_text_margin_top">
                             <EditText
                                 style="@style/modifiedEditText"

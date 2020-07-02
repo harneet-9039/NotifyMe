@@ -14,9 +14,6 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -39,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import app.com.common.GlobalMethods;
 import app.com.common.Singleton;
 import app.com.models.Notice;
@@ -205,6 +204,8 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.MyViewHold
                                     Snackbar.make(view, "Notice deleted successfully",
                                             Snackbar.LENGTH_LONG)
                                            .show();
+                                    noticeModelArrayListFilter.remove(position);
+                                    notifyDataSetChanged();
                                 }
 
                             } catch (JSONException e) {

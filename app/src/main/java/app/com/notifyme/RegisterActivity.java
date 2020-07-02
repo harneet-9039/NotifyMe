@@ -1,8 +1,6 @@
 package app.com.notifyme;
 
 import android.app.ProgressDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.appcompat.app.AppCompatActivity;
 import app.com.common.GlobalMethods;
 import app.com.common.Singleton;
 import app.com.models.Course;
@@ -40,14 +40,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private ProgressDialog progressDialog;
     private Spinner Course_Spinner, Department_Spinner;
-
+    private static int DepartmentID, CourseID, deptSelect, courseSelect;
     private ArrayList<Department> Department;
     private ArrayList<Course> Course;
-
-    private static int DepartmentID, CourseID;
+    private TextInputLayout regID, name, contactfield, deptfield, coursefield, emailfield, yearfield, passwordfield, cpasswordfield;
     private View v;
     private Button Register;
-    private EditText Name, Reg_no, year, Email, Contact, password;
+    private EditText Name, Reg_no, year, Email, Contact, password,cpwd;
     private TextView signinredirect;
 
 
@@ -73,6 +72,18 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
          Contact = findViewById(R.id.contact);
          password = findViewById(R.id.password);
          Register = findViewById(R.id.RegisterUser);
+         cpwd = findViewById(R.id.c_password);
+
+         regID = findViewById(R.id.regidfield);
+         name = findViewById(R.id.namefield);
+         emailfield = findViewById(R.id.emailfield);
+         contactfield = findViewById(R.id.contactfield);
+         deptfield = findViewById(R.id.deptfield);
+         coursefield = findViewById(R.id.coursefield);
+         yearfield = findViewById(R.id.yearfield);
+         passwordfield = findViewById(R.id.passwordfield);
+         cpasswordfield = findViewById(R.id.confirmfield);
+
         signinredirect = findViewById(R.id.signin);
          Register.setOnClickListener(this);
          signinredirect.setOnClickListener(this);
@@ -91,6 +102,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 Log.d("HAR", "onItemSelected: country: "+department.GetDepartmentID());
                 DepartmentID=department.GetDepartmentID();
                 Course.clear();
+                deptSelect=1;
                 FillCourses(department.GetDepartmentID());
             }
             }
@@ -106,6 +118,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(i>0)
                 {
+                    courseSelect=1;
                     final Course course = (Course) Course_Spinner.getItemAtPosition(i);
                     CourseID=course.GetCourseID();
                     Log.d("HAR", "onItemSelected: country: "+course.GetCourseID());
@@ -130,7 +143,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onResponse(String response) {
                         //JSONArray response = null;
-                        Log.d("HAR",response.toString());
+                        Log.d("HAR", response);
                         try {
                             JSONObject j = new JSONObject(response);
                             JSONArray data = j.getJSONArray("data");
@@ -223,7 +236,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onResponse(String response) {
                 //JSONArray response = null;
-                Log.d("HAR",response.toString());
+                Log.d("HAR", response);
                 try {
                     JSONObject j = new JSONObject(response);
                     int data = (int) j.get("code");
@@ -306,6 +319,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
     if(view.getId()==R.id.RegisterUser)
     {
+        if(isValidLogin())
         RegisterUser();
     }
     else if(view.getId()==R.id.signin){
@@ -313,5 +327,73 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         startActivity(in);
         finish();
     }
+    }
+
+    private boolean isValidLogin() {
+        boolean isValid = true;
+        if (Reg_no.getText().toString().isEmpty()) {
+            regID.setError("Please input ID");
+            isValid = false;
+        } else {
+            regID.setErrorEnabled(false);
+            isValid = true;
+        }
+        if (year.getText().toString().isEmpty()) {
+            yearfield.setError("Please input year");
+            isValid = false;
+        } else {
+            yearfield.setErrorEnabled(false);
+            isValid = true;
+        }
+        if (Name.getText().toString().isEmpty()) {
+            name.setError("Please input name");
+            isValid = false;
+        } else {
+            name.setErrorEnabled(false);
+            isValid = true;
+        }
+        if (Email.getText().toString().isEmpty()) {
+            emailfield.setError("Please input email");
+            isValid = false;
+        } else {
+            emailfield.setErrorEnabled(false);
+            isValid = true;
+        }
+        if (Contact.getText().toString().isEmpty()) {
+            contactfield.setError("Please input contact");
+            isValid = false;
+        } else {
+            contactfield.setErrorEnabled(false);
+            isValid = true;
+        }
+        if (password.getText().toString().isEmpty()) {
+            passwordfield.setError("Please input password");
+            isValid = false;
+        } else {
+            passwordfield.setErrorEnabled(false);
+            isValid = true;
+        }
+        if (deptSelect==0) {
+            deptfield.setError("Please select department");
+            isValid = false;
+        } else {
+            deptfield.setErrorEnabled(false);
+            isValid = true;
+        }
+        if (courseSelect==0) {
+            coursefield.setError("Please select course");
+            isValid = false;
+        } else {
+            coursefield.setErrorEnabled(false);
+            isValid = true;
+        }
+        if (password.getText().toString().isEmpty() || !(password.getText().toString().equals(cpwd.getText().toString()))) {
+            cpasswordfield.setError("Confirm password value must be same as password");
+            isValid = false;
+        } else {
+            cpasswordfield.setErrorEnabled(false);
+            isValid = true;
+        }
+        return isValid;
     }
 }

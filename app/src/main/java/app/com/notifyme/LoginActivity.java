@@ -20,6 +20,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private TextView Register_Link;
     private EditText UserName, Password;
+    private TextInputLayout Uname, Upwd;
     private Button LoginUser;
     private SharedPreferences.Editor editor;
     private View v;
@@ -56,15 +58,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login_);
         v = findViewById(R.id.main);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-         pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
+        pref = getApplicationContext().getSharedPreferences("UserVals", 0); // 0 - for private mode
         editor = pref.edit();
         InitializeUIComponent();
 
 
     }
 
-    private void InitializeUIComponent()
-    {
+    private void InitializeUIComponent() {
+        Uname = findViewById(R.id.textInputEmail);
+        Upwd = findViewById(R.id.textInputPassword);
         Register_Link = findViewById(R.id.Register_Link);
         LoginUser = findViewById(R.id.Login);
         UserName = findViewById(R.id.username);
@@ -74,16 +77,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         LoginUser.setOnClickListener(this);
         Register_Link.setOnClickListener(this);
-        if(pref.getString("token","")=="") {
+        if (pref.getString("token", "") == "") {
             getToken();
         }
     }
 
-    private void LoginUser()
-    {
+    private void LoginUser() {
 
-        final Intent homeintent=new Intent(LoginActivity.this,NoticeDashboard.class);
-        final String URL = GlobalMethods.getURL()+"login";
+        final Intent homeintent = new Intent(LoginActivity.this, NoticeDashboard.class);
+        final String URL = GlobalMethods.getURL() + "login";
         progressDialog.show();
 
         StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
@@ -94,119 +96,106 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 JSONObject j;
                 Log.d("HAR", response);
                 try {
-                     j = new JSONObject(response);
+                    j = new JSONObject(response);
                     String data = (String) j.get("code");
-                    if(data.equals("345")){
+                    if (data.equals("345")) {
                         progressDialog.dismiss();
                         Snackbar.make(v, "Internal Server Error",
                                 Snackbar.LENGTH_LONG)
                                 .show();
-                    }
-                    else if(data.equals("400")){
+                    } else if (data.equals("400")) {
                         progressDialog.dismiss();
                         Snackbar.make(v, "Username and password do not match",
                                 Snackbar.LENGTH_LONG)
                                 .show();
-                    }
-                    else if(data.equals("401")){
+                    } else if (data.equals("401")) {
                         progressDialog.dismiss();
                         Snackbar.make(v, "Register to continue login",
                                 Snackbar.LENGTH_LONG)
                                 .show();
-                    }
-                    else if(data.equals("402")){
+                    } else if (data.equals("402")) {
                         progressDialog.dismiss();
                         Snackbar.make(v, "Account not activated, please check your email",
                                 Snackbar.LENGTH_LONG)
                                 .show();
+                    } else if (data.equals("100")) {
+
+                        JSONArray dataArray = j.getJSONArray("data");
+                        JSONObject dataobj = dataArray.getJSONObject(0);
+                        editor.putString("registrationNumber", dataobj.getString("Reg_id"));
+                        editor.putString("name", dataobj.getString("name"));
+                        editor.putInt("departmentid", dataobj.getInt("dept_id"));
+                        editor.putInt("courseid", dataobj.getInt("course_id"));
+                        editor.putString("departmentname", dataobj.getString("Dept_name"));
+                        editor.putString("coursename", dataobj.getString("Course_branch"));
+                        editor.putInt("year", dataobj.getInt("year"));
+                        editor.putString("email", dataobj.getString("email_id"));
+                        editor.putString("contact", dataobj.getString("contact"));
+                        editor.putString("password", Password.getText().toString());
+                        editor.putInt("isCoordinator", 0);
+                        editor.commit();
+                        startServiceUtility.scheduleJob(LoginActivity.this);
+                        progressDialog.dismiss();
+                        startActivity(homeintent);
+                        finish();
+
+                    } else if (data.equals("200")) {
+                        JSONArray dataArray = j.getJSONArray("data");
+                        JSONObject dataobj = dataArray.getJSONObject(0);
+                        editor.putString("registrationNumber", dataobj.getString("Reg_id"));
+                        editor.putString("name", dataobj.getString("name"));
+                        editor.putInt("departmentid", dataobj.getInt("dept_id"));
+                        editor.putInt("courseid", dataobj.getInt("course_id"));
+                        editor.putString("departmentname", dataobj.getString("Dept_name"));
+                        editor.putString("coursename", dataobj.getString("Course_branch"));
+                        editor.putInt("year", dataobj.getInt("year"));
+                        editor.putString("email", dataobj.getString("email_id"));
+                        editor.putString("contact", dataobj.getString("contact"));
+                        editor.putString("password", Password.getText().toString());
+                        editor.putInt("isCoordinator", 1);
+                        editor.commit();
+                        startServiceUtility.scheduleJob(LoginActivity.this);
+                        progressDialog.dismiss();
+                        startActivity(homeintent);
+                        finish();
+
+                    } else if (data.equals("300")) {
+                        JSONArray dataArray = j.getJSONArray("data");
+                        JSONObject dataobj = dataArray.getJSONObject(0);
+                        Gson gson = new Gson();
+                        editor.putString("fregistrationNumber", dataobj.getString("Faculty_id"));
+                        editor.putString("fname", dataobj.getString("Name"));
+                        editor.putInt("fdepartmentid", dataobj.getInt("dept_id"));
+                        editor.putString("fdepartmentname", dataobj.getString("Dept_name"));
+                        editor.putString("femail", dataobj.getString("email_id"));
+                        editor.putString("fcontact", dataobj.getString("contact"));
+                        editor.putString("fdesignation", dataobj.getString("designation"));
+                        String[] courses = dataobj.getString("Course_id").split(",");
+                        String courseJSONString = gson.toJson(courses);
+                        editor.putString("fcourse", courseJSONString);
+                        String[] year = dataobj.getString("year").split(",");
+                        editor.putString("password", Password.getText().toString());
+                        String yearJSONString = gson.toJson(year);
+                        editor.putString("fyear", yearJSONString);
+                        String[] courseName = dataobj.getString("course_name").split(",");
+                        String courseNameJSONString = gson.toJson(courseName);
+                        editor.putString("fcoursename", courseNameJSONString);
+                        String[] courseDeptID = dataobj.getString("Course_Dept_id").split(",");
+                        String courseDeptIDJSONString = gson.toJson(courseDeptID);
+                        editor.putString("fcoursedeptID", courseDeptIDJSONString);
+                        String[] courseDeptName = dataobj.getString("Course_Dept_name").split(",");
+                        String courseDeptNameJSONString = gson.toJson(courseDeptName);
+                        editor.putString("fcoursedeptName", courseDeptNameJSONString);
+                        editor.putInt("isCoordinator", 2);
+                        editor.commit();
+                        startServiceUtility.scheduleJob(LoginActivity.this);
+                        progressDialog.dismiss();
+                        startActivity(homeintent);
+                        finish();
                     }
 
 
-
-                        else if(data.equals("100")){
-
-                        JSONArray dataArray = j.getJSONArray("data");
-                        JSONObject dataobj = dataArray.getJSONObject(0);
-                            editor.putString("registrationNumber",dataobj.getString("Reg_id"));
-                            editor.putString("name",dataobj.getString("name"));
-                            editor.putInt("departmentid",dataobj.getInt("dept_id"));
-                            editor.putInt("courseid",dataobj.getInt("course_id"));
-                            editor.putString("departmentname",dataobj.getString("Dept_name"));
-                            editor.putString("coursename",dataobj.getString("Course_branch"));
-                            editor.putInt("year",dataobj.getInt("year"));
-                            editor.putString("email",dataobj.getString("email_id"));
-                            editor.putString("contact",dataobj.getString("contact"));
-                            editor.putString("password",Password.getText().toString());
-                            editor.putInt("isCoordinator",0);
-                            editor.commit();
-                        startServiceUtility.scheduleJob(LoginActivity.this);
-                            progressDialog.dismiss();
-                            startActivity(homeintent);
-                            finish();
-
-                        }
-                        else if(data.equals("200")){
-                        JSONArray dataArray = j.getJSONArray("data");
-                        JSONObject dataobj = dataArray.getJSONObject(0);
-                            editor.putString("registrationNumber",dataobj.getString("Reg_id"));
-                            editor.putString("name",dataobj.getString("name"));
-                            editor.putInt("departmentid",dataobj.getInt("dept_id"));
-                            editor.putInt("courseid",dataobj.getInt("course_id"));
-                            editor.putString("departmentname",dataobj.getString("Dept_name"));
-                            editor.putString("coursename",dataobj.getString("Course_branch"));
-                            editor.putInt("year",dataobj.getInt("year"));
-                            editor.putString("email",dataobj.getString("email_id"));
-                            editor.putString("contact",dataobj.getString("contact"));
-                            editor.putString("password",Password.getText().toString());
-                            editor.putInt("isCoordinator",1);
-                            editor.commit();
-                        startServiceUtility.scheduleJob(LoginActivity.this);
-                            progressDialog.dismiss();
-                            startActivity(homeintent);
-                            finish();
-
-                        }
-                        else if(data.equals("300")){
-                        JSONArray dataArray = j.getJSONArray("data");
-                        JSONObject dataobj = dataArray.getJSONObject(0);
-                            Gson gson = new Gson();
-                            editor.putString("fregistrationNumber",dataobj.getString("Faculty_id"));
-                            editor.putString("fname",dataobj.getString("Name"));
-                            editor.putInt("fdepartmentid",dataobj.getInt("dept_id"));
-                            editor.putString("fdepartmentname",dataobj.getString("Dept_name"));
-                            editor.putString("femail",dataobj.getString("email_id"));
-                            editor.putString("fcontact",dataobj.getString("contact"));
-                            editor.putString("fdesignation",dataobj.getString("designation"));
-                            String[] courses = dataobj.getString("Course_id").split(",");
-                            String courseJSONString = gson.toJson(courses);
-                            editor.putString("fcourse",courseJSONString);
-                            String[] year = dataobj.getString("year").split(",");
-                            editor.putString("password",Password.getText().toString());
-                            String yearJSONString = gson.toJson(year);
-                            editor.putString("fyear",yearJSONString);
-                            String[] courseName = dataobj.getString("course_name").split(",");
-                            String courseNameJSONString = gson.toJson(courseName);
-                            editor.putString("fcoursename",courseNameJSONString);
-                            String[] courseDeptID = dataobj.getString("Course_Dept_id").split(",");
-                            String courseDeptIDJSONString = gson.toJson(courseDeptID);
-                            editor.putString("fcoursedeptID",courseDeptIDJSONString);
-                            String[] courseDeptName = dataobj.getString("Course_Dept_name").split(",");
-                            String courseDeptNameJSONString = gson.toJson(courseDeptName);
-                            editor.putString("fcoursedeptName",courseDeptNameJSONString);
-                            editor.putInt("isCoordinator",2);
-                            editor.commit();
-                            startServiceUtility.scheduleJob(LoginActivity.this);
-                            progressDialog.dismiss();
-                            startActivity(homeintent);
-                            finish();
-                        }
-
-
-
-
-
-                }
-                catch (JSONException e){
+                } catch (JSONException e) {
                     progressDialog.dismiss();
                     Snackbar.make(v, "Unexpected response from server",
                             Snackbar.LENGTH_LONG)
@@ -218,7 +207,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("HAR",error.toString());
+                Log.e("HAR", error.toString());
                 progressDialog.dismiss();
                 Snackbar.make(v, "Restart Server",
                         Snackbar.LENGTH_LONG)
@@ -226,15 +215,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
             }
-        })
-        {
+        }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> parameters = new HashMap<>();
-               // Log.d("HAR",String.valueOf(DepartmentID));
+                // Log.d("HAR",String.valueOf(DepartmentID));
                 parameters.put("reg_id", UserName.getText().toString());
                 parameters.put("password", Password.getText().toString());
-                parameters.put("token", pref.getString("token",""));
+                parameters.put("token", pref.getString("token", ""));
                 return parameters;
             }
         };
@@ -242,17 +230,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void getToken(){
+    private void getToken() {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
                     public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if(task.isSuccessful()){
-                            editor.putString("token",task.getResult().getToken());
+                        if (task.isSuccessful()) {
+                            editor.putString("token", task.getResult().getToken());
                             editor.commit();
 
-                        }
-                        else{
+                        } else {
                             progressDialog.dismiss();
                             Snackbar.make(v, "token not saved",
                                     Snackbar.LENGTH_LONG)
@@ -265,21 +252,41 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.Register_Link)
-        {
-            Intent in=new Intent(LoginActivity.this, RegisterActivity.class);
+        if (view.getId() == R.id.Register_Link) {
+            Intent in = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(in);
             finish();
-        }
-        else if(view.getId() == R.id.Login)
-        {
-            if(UserName.getText().toString().equals("admin") && Password.getText().toString().equals("admin")){
+        } else if (view.getId() == R.id.Login) {
+            if (UserName.getText().toString().equals("admin") && Password.getText().toString().equals("admin")) {
                 startActivity(new Intent(LoginActivity.this, Admin.class));
                 finish();
-            }
-            else {
-                LoginUser();
+            } else {
+                if (isValidLogin())
+                    LoginUser();
+                else {
+
+                }
             }
         }
     }
+
+    private boolean isValidLogin() {
+        boolean isValid = true;
+        if (UserName.getText().toString().isEmpty()) {
+            Uname.setError("Please input ID");
+            isValid = false;
+        } else {
+            Uname.setErrorEnabled(false);
+            isValid = true;
+        }
+        if (Password.getText().toString().isEmpty()) {
+            Upwd.setError("Please input password");
+            isValid = false;
+        } else {
+            Upwd.setErrorEnabled(false);
+            isValid = true;
+        }
+        return isValid;
+    }
+
 }
