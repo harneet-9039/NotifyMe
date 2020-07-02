@@ -33,6 +33,6 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_notice_dashboard"
-        app:menu="@menu/admin_menu_drawer" />
+    />
 
 </androidx.drawerlayout.widget.DrawerLayout>

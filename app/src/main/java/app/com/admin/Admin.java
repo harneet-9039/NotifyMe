@@ -4,48 +4,36 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-
 import app.com.common.GlobalMethods;
 import app.com.notifyme.R;
 
 public class Admin extends AppCompatActivity implements View.OnClickListener{
     private CardView viewnotice,currentreq;
     private TextView seeprofile;
-    private ImageView menu,notification;
-    private CardView viewnotice,approvedreq,currentreq,previousreq,rejectedreq;
     private View view;
-    private ImageView notification;
-    private TextView menu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
         // initialize cardview
-        seeprofile= findViewById(R.id.seeprofile_link);
+        //seeprofile= findViewById(R.id.seeprofile_link);
 
-        menu= findViewById(R.id.menu);
-        notification= findViewById(R.id.notification);
 
         viewnotice= findViewById(R.id.view_notice);
         currentreq= findViewById(R.id.current_req);
-        menu=(TextView) findViewById(R.id.menu);
+
       //  notification=(ImageView)findViewById(R.id.notification);;
-        viewnotice=(CardView)findViewById(R.id.view_notice);
-        approvedreq=(CardView)findViewById(R.id.approved_req);
-        currentreq=(CardView)findViewById(R.id.current_req);
-        previousreq=(CardView)findViewById(R.id.previous_req);
-        rejectedreq=(CardView)findViewById(R.id.rejected_req);
+        viewnotice= findViewById(R.id.view_notice);
+        currentreq= findViewById(R.id.current_req);
 
         //onClickListener
 
-        menu.setOnClickListener(this);
       //  notification.setOnClickListener(this);
 
         viewnotice.setOnClickListener(this);
