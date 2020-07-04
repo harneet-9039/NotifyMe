@@ -35,6 +35,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.snackbar.Snackbar;
 
+import net.gotev.uploadservice.ContentType;
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.ServerResponse;
 import net.gotev.uploadservice.UploadInfo;
@@ -418,7 +419,7 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
 
     public void attachment_file_upload(View view){
         Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-        chooseFile.setType("image/*");
+        chooseFile.setType("*/*");
         chooseFile = Intent.createChooser(chooseFile, "Choose a file");
         flag=1;
         startActivityForResult(chooseFile, PICKFILE_RESULT_CODE);
@@ -896,7 +897,7 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
 
     private void PostNoticeToServer() throws IOException {
         progressDialog.show();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date now = Calendar.getInstance().getTime();
         MultipartUploadRequest multipartUploadRequest = new MultipartUploadRequest(this,GlobalMethods.getURL()+"create");
         multipartUploadRequest.setMethod("POST");
@@ -907,7 +908,7 @@ public class createNotice extends AppCompatActivity implements View.OnClickListe
         File[] childfileAtt = attachmentDirectory.listFiles();
         if(childfileAtt.length>0) {
             for (File file2 : childfileAtt) {
-                multipartUploadRequest.addFileToUpload(file2.getPath(), "attachment");
+                multipartUploadRequest.addFileToUpload(file2.getPath(), "attachment",file2.getName(), ContentType.autoDetect(file2.getPath()));
             }
         }
         if(pref.getString("registrationNumber","")!=""){

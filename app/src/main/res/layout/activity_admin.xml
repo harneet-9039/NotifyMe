@@ -34,6 +34,7 @@ tools:context="app.com.admin.Admin">
                 android:layout_width="50dp"
                 android:layout_height="30dp"
                 android:text="Logout"
+                android:clickable="true"
                 android:textColor="@color/white"
                 android:textSize="15dp"
                 android:layout_marginLeft="0dp"

@@ -3,6 +3,8 @@ package app.com.admin;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -31,6 +33,7 @@ public class Admin extends AppCompatActivity implements View.OnClickListener{
       //  notification=(ImageView)findViewById(R.id.notification);;
         viewnotice= findViewById(R.id.view_notice);
         currentreq= findViewById(R.id.current_req);
+        seeprofile = findViewById(R.id.menu);
 
         //onClickListener
 
@@ -38,6 +41,7 @@ public class Admin extends AppCompatActivity implements View.OnClickListener{
 
         viewnotice.setOnClickListener(this);
         currentreq.setOnClickListener(this);
+        seeprofile.setOnClickListener(this);
     }
 
 
@@ -46,12 +50,14 @@ public class Admin extends AppCompatActivity implements View.OnClickListener{
         {
             Intent in=new Intent(Admin.this, Admin_ViewNotice.class);
             startActivity(in);
+
         }
 
         else if(v.getId()==R.id.current_req)
         {
             Intent in=new Intent(Admin.this, Admin_ViewRequest.class);
             startActivity(in);
+
         }
 
         else if(v.getId()==R.id.menu)
@@ -61,7 +67,7 @@ public class Admin extends AppCompatActivity implements View.OnClickListener{
             builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    GlobalMethods.logout(Admin.this, view);
+                    GlobalMethods.logout(Admin.this,view);
                     finish();
                     dialogInterface.cancel();
                 }
@@ -74,6 +80,42 @@ public class Admin extends AppCompatActivity implements View.OnClickListener{
             });
             final AlertDialog alertDialog = builder.create();
             alertDialog.show();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.admin, menu);
+        return true;
+    }
+
+    //Handling Action Bar button click
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                AlertDialog.Builder builder = new AlertDialog.Builder(Admin.this);
+                builder.setMessage("Are you sure you want to logout?");
+                builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        GlobalMethods.logout(Admin.this,view);
+                        finish();
+                        dialogInterface.cancel();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                final AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

@@ -84,7 +84,9 @@ public class GlobalMethods {
                     if(code==200){
                         editor.clear();
                         editor.apply();
-                        ctx.startActivity(new Intent(ctx,LoginActivity.class));
+                        Intent intent = new Intent(ctx,LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        ctx.startActivity(intent);
                     }
                     else{
                         Snackbar.make(v, "Logout not successful",
